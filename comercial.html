@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FEND — Cadastro de Nova Aluna</title>
+<title>SAGA — Cadastro de Novos(as)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --azul: #0D2B6B; --azul-m: #1A4DB5; --azul-c: #D6E4F7;
+    --azul: #111111; --azul-m: #333333; --azul-c: #E8E8E8;
     --verde: #1A7A4A; --verde-c: #D6F0E3;
     --vermelho: #A32D2D; --vermelho-c: #FDEAEA;
     --cinza: #F5F7FA; --borda: #E2E8F0; --texto: #1A2035; --texto2: #5A6580; --branco: #ffffff;
@@ -76,18 +76,18 @@
 
 <div class="login-overlay" id="login-overlay">
   <div class="login-box">
-    <div class="login-logo">FEND</div>
-    <div class="login-sub">Comercial · Cadastro de Alunas</div>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAAA2CAYAAADK3wsyAAAJzklEQVR4nO2dbYwdVRnHf3fvdrul222BClTFanUr0EIgpLbYWHyBFKsCtmhUvtQoETWoRQgmRiMoEWtSMYii6QcQK4mAIlKw5SW1RWgiiNEWbSlYSq3KQi0tLft6xw//8+ScOXfm7iKw97o9/2Qyc2fOyzPnPOf/vJzZtgJ0k5CQkPD/hIo7EhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISXjW00p/yV4Cqux6K7leAzB3h/fB3iDZG/qcKMmD4f5LU92/91NxhsPcYjsqXyRuizR2N8EplP2wQKlWILmBidK+Kn9BmoUzeSUjm+Fk7IyvLuESzmStczTOAc4CzgV7gGWAfcBB4DngU2OvKTgPOB25EE2esYe3Nc8eRwAHy71lzdf4O3MnoGYWor27gTGCxk+evQL+Ttx14CrjbtT0F+ATw46iNECbHO4HTXftlsv8FeKBBW4c9bNDagauR4mTAFcDUoFwXGuzPASuAE4CrgNVB/bjN1yHlugFvTuNjL2KbsF4jGCN1A1cCT7t2tgAnB21UgTcDlwIbgOXA5cBNBfKGMDN+LFKwNQ1k3+H6aTY5tCTMX5kErMcP2teiMjEuRb5GBqxy98omy3ALMAj0ufMgYpgacJYrU2TmQtjzM4Btgbz/RuwIxeb6bNdPhhR9NPKGuL9A9gE0BqeOUvbDDjYgP0QD348Grsc9iwesLbj3VVdnpftdNFkVoMPVWY4meBCvFHb9owZtxLKeBbzk6h1ybV7tnk0o6R/gY67O9aPoK6zbBny9gey2EF+Oso57mHPbg6LCIfygzaQ8WqrgB3I3IzNBu6tzCflJsUgrA3YBnUH7ZbLOBvYH7RgbzaPcwQ/v7wJuHkHeWHaAbxfIbuP1GC3+j/c1I4qxPj+EBt8mux1YhCZuAvU+Reh034BXijLYZPQAO8k7v3Z9PLAwkqtI3tXIKR8K5OpFTnxGsVOdBfLfgvfvRgNrbwYKPKrBPRuzU4C57rolo9FmCjU3uLZI6RrkvPfj2cUYqxr8/i2a3DJUXP03ApORr9ZGXkGNfS4I6oSwCX0/8C78ArBJfhp4kcbRpt3f4MqOBqb4p6Bo8Up8Ls0w7MqdH9RpOTRTqDAiNDleD/we+ULvA47Bm4Jh/KDuQaYRilnDzNEHgO3Ar4EX8ApqfVZQ+qPD9VFkYi6iPoEL8GwkexFMtl3A8+56pLSHtXcu8AfgV8gstgd1Tc4Pu/Ipoepg/sSN1DurteA6A/4DPIQiw2VI2QxHNejDJmgNShMA3Eq577XIlTGltMnrRgwZymb1fx69TxGsnTch/ymUrVGdKvBLZBYBNpL3t0yeYeCkUbY75mimQJupZwozMUNo8Kah8H8FcBuwFfgB8pX2Uu5I15ATXkUJR4BfBM8NxixLo2ehIz+dvP9k6CvotxodFuXuBX4a3SsaezPdC1ydf7p2b3PPQ9YzFv9gJPNhDYtwpqPMe7wiw6Pmng1GZXpRDgnqB9WY5CvAZ4P7RyImDFnImOtJZBpNNlPa8wrkM+a6Nurv1YC19V28wgO8BZ+bi6PGza5MyylXM3IkGZq851AO6g73e4j6NEQc5tugTnf15iM2CyNBW9ELUBqiDb3nPmATilLNObd6s1xbm8hHqfa/ixT5SZXoPAsx3RHIeR/GM7Epbc2134UU/UGkrIYhFICcAHwzGI+dyP9a6No1ZsxQAPR2lNxtqe2gZmm7OaB3IVrfSX6D1xz4eFIrKE0xiCZxZVTGzMo8tDf5DBrsAXd/NfUmziZjWdCH4dDLeKcBZCpPBNYC9wH3Buf17vpulM87GNU3pX4vymHtxzN3BvyM+sDCFsl57ndLsddYM5et5MkokrsdpRVOBT4FXAicFsllpiBkMIuc3oMizD34VV5DivIi2qOz9EGNPHsYbEKWAJfhmQ/k80Cxb2ewyd7tjg2u71VIMexd7Poq4HsF7djYLAUed7IbO9XQ7kDM5LYQlqKF1jKsBc3bOpiAJvNWNFgvoMlYhfI7ZyLFmY+UB/wXAeAnohOZoz343FYnUtCtaOsldNKHgb+hCMuSj6aQPYjxHg7qPIkYZjL1jFfEqqbIj+LNsclsTvxWvFkbCOoOIb+wB7HWx4O229zznWhT3MYiNI2zUdplpK8uxi1scjqRmZjmfttExOhGDLeOvAMeRpSLXVlzyJcA1zWQwfb6ipz077gyoVJsJG+erOxPgrIGY5V3l8ibAR8tqGdbVZ9E+4ll+HIkQ3j9pYJ2Ib+hbh8MjAmaZaP7gbchljJn174+NUWrohW8FinQNeQThuE2jMEy7g+4Nia6czt+S+l+126cUAX5Lu3kTePNFK/6KQ3e74hAnhhl9zK0kO5zMnQEstsm/F34Lag4oWrRZcha5gZkKIgwE9uy+5GvBOFL9aKcFTT+xilkEdvLM9Z6Hp/pr6DE6nb0TVTcH0E7d1DPADYJ7whkqiCT+BSevYyB7o3aBM9c51DPjnb9keidjVneikx22Ua69bO5oO0aWrCzgrJWfgFi393A75AvF8v9mqCZ0cUB9HWmraii1WSDaIP1mLs/4MqvQ/7aRFf2IuS3PFvXkmATaUnJsE9jxGVR+YPAxdR/xz8Tv/9YlAyGvEKWbdFYhLvC1eujmCltrm535zhq7EBpFluQGfLP1qG90TegnYh70I6B+ZzjBqHt34Je0L7LmkD5y9oqvxM/UYdQfsdMaBdiw38F9+L2zAQfR3lC9XG8sxxGZyuC8gOI9WaTZwmrs5jixHCNPHPZex2HosE/R+2EsIVxEuUJ1Y2urP3tgcnc58r34RXZZBg3CAfsCfzgXBKVs8kNPxw8HrFUhib33KjOTXjzsJCRsQUp1CB+U9x2AuZHZU2Gi/EfDGbAt9x9U2ab1Avc80eQE34h2v7JKM6nrXX9H0ALZiT8I5LddjFeQtl8w+Wuz/7ofFkg97iBDajt+S1HlH0dyv+chv+CM8Q89N14hvwGm/yjkI90D3mG6EVR4Qzy31F1AEcDn6aeVcJjB/JVpuIVy85zkWmyibJPdgxTkD+2kvr82BrgM2jxTEdmalPU9y6UWD42kr0T/W3AFSPI/gjKG3ahoOkAeWbejxTwNY8cxzpqMF9iKtre+ELw7GSkNFU0cZ0o6pqFlGsbylKvd+VnAp8H5iCF2YePouwz4W3I1FyPWO0M5OfNIZ9YDWH5s/3IRF6Lz6OF0erpKK2wCG3NPIEY9RjgT8BvXLn2oN4cNOl7gC+ibP5U8p8DdSIm2g78EZ/yWIJ8qhPxgUiR7JNQoLMV+AbKGX7fjeMOxKTrGYOtov8CKzbwpc3UM04AAAAASUVORK5CYII=" alt="SAGA" style="height:44px;margin-bottom:8px">
+    <div class="login-sub">Comercial · Cadastro</div>
     <input type="text" class="login-field" id="login-user" placeholder="Usuário" autocomplete="off">
     <input type="password" class="login-field" id="login-pass" placeholder="Senha">
     <button class="login-btn" onclick="fazerLogin()">Entrar</button>
     <div class="login-error" id="login-error"></div>
   </div>
-  <div class="login-version">FEND © 2025</div>
+  <div class="login-version">SAGA © 2025</div>
 </div>
 
 <header class="header">
-  <div class="header-logo">FEND <span>Cadastro de Novas Alunas</span></div>
+  <div class="header-logo"><img src="data:image/png;base64,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" alt="SAGA" style="height:28px;display:block;margin-bottom:2px"><span>Cadastro de Novos(as)</span></div>
   <div class="header-right">
     <span class="header-user" id="header-user"></span>
     <button class="btn-logout" onclick="fazerLogout()">↩ Sair</button>
@@ -95,39 +95,40 @@
 </header>
 
 <div class="page">
-  <div class="page-title">Nova aluna</div>
-  <div class="page-sub">Preencha os dados da aluna recém-matriculada. Ela vai aparecer automaticamente no painel pedagógico.</div>
+  <div class="page-title">Novo(a) aluno(a)</div>
+  <div class="page-sub">Preencha os dados essenciais da venda. Os dados cadastrais completos virão via formulário.</div>
 
   <div class="card">
-    <div class="section-title">Dados pessoais</div>
+    <div class="section-title">Dados do(a) aluno(a)</div>
     <div class="field-grid">
       <div class="field"><label>Nome completo <span class="req">*</span></label><input type="text" id="f-nome" placeholder="Ex: Ana Paula Souza"></div>
       <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="f-wpp" placeholder="(61) 9 9999-9999"></div>
-      <div class="field"><label>E-mail</label><input type="email" id="f-email" placeholder="email@exemplo.com"></div>
+      <div class="field"><label>Data de entrada <span class="req">*</span></label><input type="text" id="f-entrada" placeholder="DD/MM/AAAA"></div>
       <div class="field"><label>Instagram</label><input type="text" id="f-insta" placeholder="@usuario"></div>
-      <div class="field"><label>Data de nascimento</label><input type="text" id="f-nasc" placeholder="DD/MM/AAAA"></div>
-      <div class="field"><label>CPF</label><input type="text" id="f-cpf" placeholder="000.000.000-00"></div>
-      <div class="field"><label>RG</label><input type="text" id="f-rg"></div>
-      <div class="field"><label>Entrada</label><input type="text" id="f-entrada" placeholder="DD/MM/AAAA"></div>
-      <div class="field full"><label>Endereço completo</label><textarea id="f-end" rows="2" placeholder="Rua, número, bairro, cidade, estado, CEP"></textarea></div>
     </div>
   </div>
 
   <div class="card">
     <div class="section-title">Dados da venda</div>
     <div class="field-grid">
-      <div class="field"><label>Produto / Programa <span class="req">*</span></label>
+      <div class="field"><label>Produto <span class="req">*</span></label>
         <select id="f-produto">
           <option value="">Selecione...</option>
-          <option value="Anual">Anual</option>
-          <option value="15 MESES">15 Meses</option>
-          <option value="Semestral">Semestral</option>
-          <option value="Mentoria Individual">Mentoria Individual</option>
-          <option value="Outro">Outro</option>
+          <option value="FEND">FEND</option>
+          <option value="IGNIS">IGNIS</option>
+          <option value="CONSULTORIA">CONSULTORIA</option>
+          <option value="OUTROS">OUTROS</option>
         </select>
       </div>
-      <div class="field"><label>Ciclo</label><input type="text" id="f-ciclo" placeholder="Ex: Entrada, Renovação..."></div>
-      <div class="field"><label>Valor pago (R$) <span class="req">*</span></label><input type="text" id="f-valor" placeholder="Ex: 1.997,00"></div>
+      <div class="field"><label>Ciclo <span class="req">*</span></label>
+        <select id="f-ciclo">
+          <option value="">Selecione...</option>
+          <option value="Entrada">Entrada</option>
+          <option value="Renovação">Renovação</option>
+        </select>
+      </div>
+      <div class="field"><label>Valor total (R$) <span class="req">*</span></label><input type="text" id="f-valor" placeholder="Ex: 19.970,00"></div>
+      <div class="field"><label>Valor de entrada (R$)</label><input type="text" id="f-valor-entrada" placeholder="Ex: 3.000,00"></div>
       <div class="field"><label>Forma de pagamento <span class="req">*</span></label>
         <select id="f-pgto">
           <option value="">Selecione...</option>
@@ -224,11 +225,13 @@ window.cadastrarAluna = async function() {
   const nome    = document.getElementById('f-nome').value.trim();
   const wpp     = document.getElementById('f-wpp').value.trim();
   const produto = document.getElementById('f-produto').value;
+  const ciclo   = document.getElementById('f-ciclo').value;
   const pgto    = document.getElementById('f-pgto').value;
   const valor   = document.getElementById('f-valor').value.trim();
 
-  if (!nome || !wpp || !produto || !pgto || !valor) {
-    mostrarStatus('err', '⚠ Preencha os campos obrigatórios: nome, WhatsApp, produto, forma de pagamento e valor.');
+  const entrada = document.getElementById('f-entrada').value.trim();
+  if (!nome || !wpp || !entrada || !produto || !ciclo || !pgto || !valor) {
+    mostrarStatus('err', '⚠ Preencha todos os campos obrigatórios.');
     return;
   }
 
@@ -242,16 +245,16 @@ window.cadastrarAluna = async function() {
 
   const novaAluna = {
     _id, nome, wpp,
-    email:   document.getElementById('f-email').value.trim(),
+    email:   '',
     insta:   document.getElementById('f-insta').value.trim(),
-    nasc:    document.getElementById('f-nasc').value.trim(),
-    cpf:     document.getElementById('f-cpf').value.trim(),
-    rg:      document.getElementById('f-rg').value.trim(),
-    end:     document.getElementById('f-end').value.trim(),
-    entrada: document.getElementById('f-entrada').value.trim() || hoje,
-    produto, pgto,
-    ciclo:   document.getElementById('f-ciclo').value.trim() || 'Entrada',
+    nasc:    '',
+    cpf:     '',
+    rg:      '',
+    end:     '',
+    entrada: document.getElementById('f-entrada').value.trim(),
+    produto, pgto, ciclo,
     valorPago: valor,
+    valorEntrada: document.getElementById('f-valor-entrada').value.trim(),
     eng:'', risco:'', fin:'',
     obs:     document.getElementById('f-obs').value.trim(),
     obsMar:'', semaforo:'verde', drive:'',
@@ -265,9 +268,10 @@ window.cadastrarAluna = async function() {
   try {
     await setDoc(doc(db, 'alunas', _id), novaAluna);
 
-    ['f-nome','f-wpp','f-email','f-insta','f-nasc','f-cpf','f-rg','f-end','f-entrada','f-ciclo','f-valor','f-obs']
+    ['f-nome','f-wpp','f-insta','f-entrada','f-valor','f-valor-entrada','f-obs']
       .forEach(id => { document.getElementById(id).value = ''; });
     document.getElementById('f-produto').value = '';
+    document.getElementById('f-ciclo').value = '';
     document.getElementById('f-pgto').value = '';
 
     mostrarStatus('ok', `✓ ${nome} cadastrada! Já aparece no painel pedagógico.`);
