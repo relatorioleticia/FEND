@@ -843,7 +843,6 @@ function fazerLogin() {
     localStorage.setItem('fend-auth', match.usuario);
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('sidebar-user').textContent = match.nome;
-    if (window._iniciarFirestore) window._iniciarFirestore();
   } else {
     document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
     document.getElementById('login-pass').value = '';
@@ -862,7 +861,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (match) {
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('sidebar-user').textContent = match.nome;
-    window._autoLogin = true;
   }
 });
 </script>
@@ -1688,9 +1686,6 @@ window._iniciarFirestore = function() {
   sincSheetsEIniciar();
 };
 
-// Auto-login if already authenticated
-if (window._autoLogin) {
-  
 window.toggleStatus = async function(idx) {
   alunas[idx].status = alunas[idx].status === 'inativo' ? 'ativo' : 'inativo';
   editIdx = idx;
@@ -1700,9 +1695,8 @@ window.toggleStatus = async function(idx) {
 
 window.excluirAluna = async function(idx) {
   const nome = alunas[idx].nome;
-  if (!confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) return;
+  if (!confirm('Excluir ' + nome + '? Essa ação não pode ser desfeita.')) return;
   const _id = alunas[idx]._id;
-  // Remove from Firestore
   try {
     const { doc: fbDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await deleteDoc(fbDoc(db, 'alunas', _id));
@@ -1712,8 +1706,10 @@ window.excluirAluna = async function(idx) {
   showToast('Excluído com sucesso');
 };
 
-window._iniciarFirestore();
-}
+// Inicia sempre — o listener verifica autenticação internamente
+// O módulo Firebase já carregou, chama direto
+iniciarListenerFirestore();
+sincSheetsEIniciar();
 
 </script>
 </body>
