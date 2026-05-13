@@ -931,7 +931,7 @@ function iniciarListenerFirestore() {
 }
 
 
-function showPage(page) {
+window.showPage = function(page) {
   document.querySelectorAll('.main').forEach(m => m.style.display = 'none');
   document.getElementById('page-'+page).style.display = 'block';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1110,7 +1110,7 @@ function renderOnboarding() {
   }).join('');
 }
 
-async function backObCard(idx, targetCol) {
+window.backObCard = async function(idx, targetCol) {
   alunas[idx].onboarding.obcol = targetCol;
   // Ao voltar, limpa os checks do passo desfeito
   const map = {nao:['plataforma','aula0','grupo','form','termo'], d0:['grupo','form','termo'], d1:['grupo','form','termo'], d2:['form','termo'], d3:['termo']};
@@ -1119,7 +1119,7 @@ async function backObCard(idx, targetCol) {
   renderOnboarding();
 }
 
-async function moveObCard(idx, targetCol) {
+window.moveObCard = async function(idx, targetCol) {
   alunas[idx].onboarding.obcol = targetCol;
   // Marcar checks automaticamente ao avançar
   const map = {d1:['plataforma','aula0'], d2:['plataforma','aula0','grupo','termo'], d3:['plataforma','aula0','grupo','form','termo'], ok:['plataforma','aula0','grupo','form','termo']};
@@ -1182,7 +1182,7 @@ function buildCavCard(a, i, mod) {
   </div>`;
 }
 
-async function backCav(idx, mod) {
+window.backCav = async function(idx, mod) {
   const cur = alunas[idx].cavs[mod] || '';
   alunas[idx].cavs[mod] = cur==='sim'?'pend':cur==='pend'?'':'';
   await save();
@@ -1190,7 +1190,7 @@ async function backCav(idx, mod) {
   renderTable();
 }
 
-async function advanceCav(idx, mod) {
+window.advanceCav = async function(idx, mod) {
   const cur = alunas[idx].cavs[mod] || '';
   alunas[idx].cavs[mod] = cur===''?'pend':cur==='pend'?'sim':'';
   await save();
@@ -1198,7 +1198,7 @@ async function advanceCav(idx, mod) {
   renderTable();
 }
 
-function openModal(idx) {
+window.openModal = function(idx) {
   editIdx = idx;
   const a = idx !== null ? alunas[idx] : {
     nome:'',entrada:'',wpp:'',email:'',cpf:'',rg:'',nasc:'',end:'',insta:'',pgto:'',
@@ -1257,7 +1257,7 @@ function openModal(idx) {
   document.getElementById('overlay').classList.add('open');
 }
 
-function toggleCav(m) {
+window.toggleCav = function(m) {
   if (editIdx === null) return;
   const cur = alunas[editIdx].cavs[m];
   const next = cur===''?'pend':cur==='pend'?'sim':'';
@@ -1267,7 +1267,7 @@ function toggleCav(m) {
   el.querySelector('.cav-mod-status').textContent = next==='sim'?'Entregue':next==='pend'?'Pendente':'Não entregue';
 }
 
-async function saveAluna() {
+window.saveAluna = async function() {
   const ob = {
     plataforma: document.getElementById('ob-plataforma').value,
     aula0: document.getElementById('ob-aula0').value,
@@ -1340,12 +1340,12 @@ function renderEncontros(lista) {
 }
 
 let _encontrosTemp = [];
-function addEncontro() {
+window.addEncontro = function() {
   _encontrosTemp.push({ tipo: TIPOS_ENCONTRO[0], data: '', presenca: '' });
   renderEncontros(_encontrosTemp);
 }
-function updateEncontro(i, field, val) { _encontrosTemp[i][field] = val; }
-function removeEncontro(i) { _encontrosTemp.splice(i,1); renderEncontros(_encontrosTemp); }
+window.updateEncontro = function(i, field, val) { _encontrosTemp[i][field] = val; }
+window.removeEncontro = function(i) { _encontrosTemp.splice(i,1); renderEncontros(_encontrosTemp); }
 function coletarEncontros() { return _encontrosTemp; }
 
 // ── SESSÕES INDIVIDUAIS ──────────────────────────────────────────────────────
@@ -1407,18 +1407,18 @@ function renderSessoes(lista) {
 }
 
 let _sessoesTemp = [];
-function addSessao() {
+window.addSessao = function() {
   _sessoesTemp.push({ data: '', mentora: '', obs: '', link: '' });
   renderSessoes(_sessoesTemp);
 }
-function updateSessao(i, field, val) { _sessoesTemp[i][field] = val; }
-function removeSessao(i) { _sessoesTemp.splice(i,1); renderSessoes(_sessoesTemp); }
+window.updateSessao = function(i, field, val) { _sessoesTemp[i][field] = val; }
+window.removeSessao = function(i) { _sessoesTemp.splice(i,1); renderSessoes(_sessoesTemp); }
 function coletarSessoes() { return _sessoesTemp; }
 
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function closeModalOutside(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+window.closeModal = function() { document.getElementById('overlay').classList.remove('open'); }
+window.closeModalOutside = function(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
 
-function showToast(msg) {
+window.showToast = function(msg) {
   const t = document.getElementById('toast');
   if (msg) t.textContent = msg;
   t.classList.add('show');
@@ -1427,7 +1427,7 @@ function showToast(msg) {
 
 
 
-async function resetDados() {
+window.resetDados = async function() {
   if (!confirm('Isso vai apagar todas as edições e recarregar a base original. Continuar?')) return;
   alunas = BASE.map(a => ({...a,
     _id: slugNome(a.nome),
@@ -1517,7 +1517,7 @@ function mergeComLocal(novas) {
   return { merged, novasCount };
 }
 
-async function sincSheets(manual = false) {
+async window.sincSheets = async function(manual = false) {
   const statusEl = document.getElementById('sync-status');
   if (statusEl) statusEl.textContent = '🔄 Sincronizando com Google Sheets...';
 
@@ -1566,7 +1566,7 @@ const USUARIOS = [
   { usuario: 'Leticia', senha: 'Saga123', nome: 'Letícia' },
 ];
 
-function fazerLogin() {
+window.fazerLogin = function() {
   const u = document.getElementById('login-user').value.trim();
   const s = document.getElementById('login-pass').value;
   const match = USUARIOS.find(x => x.usuario.toLowerCase() === u.toLowerCase() && x.senha === s);
@@ -1582,7 +1582,7 @@ function fazerLogin() {
   }
 }
 
-function fazerLogout() {
+window.fazerLogout = function() {
   localStorage.removeItem('fend-auth');
   location.reload();
 }
