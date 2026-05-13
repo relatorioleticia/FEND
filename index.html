@@ -1012,7 +1012,7 @@ function getCavMini(cavs) {
   }).join('');
 }
 
-function resetDados() {
+async function resetDados() {
   if (!confirm('Isso vai apagar todas as edições e recarregar a base original. Continuar?')) return;
   alunas = BASE.map(a => ({...a, cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}, onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''}}));
   await save();
@@ -1556,7 +1556,7 @@ function mergeComLocal(novas) {
   return { merged, novasCount };
 }
 
-async window.sincSheets = async function(manual = false) {
+window.sincSheets = async function(manual = false) {
   const statusEl = document.getElementById('sync-status');
   if (statusEl) statusEl.textContent = '🔄 Sincronizando com Google Sheets...';
 
