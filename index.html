@@ -932,6 +932,7 @@ const SHEETS_RANGE    = 'BASE - Catarse!A2:AP200';
 let alunas = [];
 let editIdx = null;
 let _firestoreLoaded = false;
+window._getAlunas = () => alunas;
 
 // ── FIREBASE SAVE/LOAD ────────────────────────────────────────────────────────
 function slugNome(nome) {
