@@ -488,6 +488,9 @@
     <button class="nav-item" onclick="showPage('cavs')">
       <span class="icon">📋</span> CAVs
     </button>
+    <button class="nav-item" onclick="showPage('atividades')">
+      <span class="icon">📚</span> Atividades
+    </button>
   </nav>
   <div class="sidebar-footer" style="padding:12px">
   <div id="sidebar-user" style="color:rgba(255,255,255,0.5);font-size:11px;padding:0 12px;margin-bottom:6px"></div>
@@ -612,6 +615,59 @@
   <div id="cav-kanban" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;align-items:flex-start"></div>
 </main>
 
+<!-- PAGE ATIVIDADES -->
+<main class="main" id="page-atividades" style="display:none">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Atividades</div>
+      <div class="page-sub">Envie atividades para todos(as) ou para um(a) aluno(a) específico(a).</div>
+    </div>
+    <button class="btn-add" onclick="abrirNovaAtividade()" style="white-space:nowrap">+ Nova atividade</button>
+  </div>
+
+  <!-- FORM NOVA ATIVIDADE -->
+  <div id="form-atividade" style="display:none;background:var(--branco);border-radius:12px;border:1px solid var(--borda);padding:24px 28px;margin-bottom:24px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--azul-m);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--borda)">Nova atividade</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="field"><label>Título <span style="color:var(--azul-m)">*</span></label><input type="text" id="na-titulo" placeholder="Ex: CAV Módulo 1"></div>
+      <div class="field"><label>Módulo</label>
+        <select id="na-modulo" style="padding:10px 13px;border:1px solid var(--borda);border-radius:8px;font-family:inherit;font-size:13px;background:var(--cinza);color:var(--texto);outline:none">
+          <option value="">— Geral</option>
+          <option value="M0">M0 — Onboarding</option>
+          <option value="M1">M1 — Visão Estratégica</option>
+          <option value="M2">M2 — Fundamentos</option>
+          <option value="M3">M3 — Audiência</option>
+          <option value="M4">M4 — Integração</option>
+          <option value="M5">M5 — Funis</option>
+          <option value="M6">M6 — Pitch</option>
+          <option value="M7">M7 — Trilha</option>
+          <option value="M8">M8 — Projeto Final</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1/-1"><label>Descrição</label><textarea id="na-desc" rows="2" style="width:100%;padding:10px 13px;border:1px solid var(--borda);border-radius:8px;font-family:inherit;font-size:13px;background:var(--cinza);color:var(--texto);outline:none;resize:vertical" placeholder="Instruções para o(a) aluno(a)..."></textarea></div>
+      <div class="field" style="grid-column:1/-1"><label>Link do PDF no Google Drive <span style="color:var(--azul-m)">*</span></label><input type="url" id="na-link" placeholder="https://drive.google.com/..."></div>
+      <div class="field"><label>Enviar para</label>
+        <select id="na-tipo" style="padding:10px 13px;border:1px solid var(--borda);border-radius:8px;font-family:inherit;font-size:13px;background:var(--cinza);color:var(--texto);outline:none" onchange="toggleAlunaSelect()">
+          <option value="geral">Todos(as) os(as) alunos(as)</option>
+          <option value="individual">Aluno(a) específico(a)</option>
+        </select>
+      </div>
+      <div class="field" id="na-aluna-wrap" style="display:none"><label>Aluno(a)</label>
+        <select id="na-aluna" style="padding:10px 13px;border:1px solid var(--borda);border-radius:8px;font-family:inherit;font-size:13px;background:var(--cinza);color:var(--texto);outline:none">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-add" onclick="salvarAtividade()">Publicar atividade</button>
+      <button onclick="fecharNovaAtividade()" style="padding:10px 18px;background:var(--cinza);border:1px solid var(--borda);border-radius:8px;font-family:inherit;font-size:13px;cursor:pointer">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- LISTA DE ATIVIDADES -->
+  <div id="ativ-admin-lista"><div style="text-align:center;padding:40px;color:var(--texto2);font-size:13px">Carregando...</div></div>
+</main>
+
 <!-- MODAL PERFIL -->
 <div class="overlay" id="overlay" onclick="closeModalOutside(event)">
   <div class="modal" id="modal">
@@ -730,6 +786,14 @@
             <div style="display:flex;gap:8px;align-items:center">
               <input type="url" id="f-drive" placeholder="https://drive.google.com/..." style="flex:1">
               <a id="f-drive-link" href="#" target="_blank" style="display:none;padding:9px 12px;background:var(--azul-c);color:var(--azul-m);border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">Abrir ↗</a>
+            </div>
+          </div>
+          <div class="field field-full" id="f-link-aluno-wrap" style="margin-top:4px">
+            <label>Link da área do(a) aluno(a)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="f-link-aluno" readonly style="flex:1;background:#f8f8f8;color:var(--texto2);font-size:12px;cursor:text">
+              <button onclick="copiarLinkAluno()" style="padding:9px 12px;background:var(--azul-c);color:var(--azul-m);border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Copiar 🔗</button>
+              <a id="f-link-aluno-open" href="#" target="_blank" style="padding:9px 12px;background:var(--verde-c);color:var(--verde);border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">Abrir ↗</a>
             </div>
           </div>
         </div>
@@ -1305,6 +1369,12 @@ window.openModal = function(idx) {
     if (this.value) { driveLink.href = this.value; driveLink.style.display = 'block'; }
     else { driveLink.style.display = 'none'; }
   };
+  // Link da área do aluno
+  if (a._id) {
+    const alunoLink = gerarLinkAluno(a._id);
+    document.getElementById('f-link-aluno').value = alunoLink;
+    document.getElementById('f-link-aluno-open').href = alunoLink;
+  }
   _encontrosTemp = JSON.parse(JSON.stringify(a.encontros||[]));
   _sessoesTemp = JSON.parse(JSON.stringify(a.sessoes||[]));
   renderEncontros(_encontrosTemp);
@@ -1710,6 +1780,101 @@ window.excluirAluna = async function(idx) {
 // O módulo Firebase já carregou, chama direto
 iniciarListenerFirestore();
 sincSheetsEIniciar();
+
+// ── LINK DA ÁREA DO ALUNO ─────────────────────────────────────────────────────
+function gerarLinkAluno(alunoId) {
+  const base = window.location.origin + window.location.pathname.replace('index.html','').replace(/\/+$/, '');
+  return base + '/aluno.html?id=' + alunoId;
+}
+
+window.copiarLinkAluno = function() {
+  const link = document.getElementById('f-link-aluno').value;
+  if (!link) return;
+  navigator.clipboard.writeText(link).then(() => showToast('Link copiado!'));
+};
+
+// ── ATIVIDADES ─────────────────────────────────────────────────────────────────
+window.abrirNovaAtividade = function() {
+  document.getElementById('form-atividade').style.display = 'block';
+  // Populate aluna select
+  const sel = document.getElementById('na-aluna');
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    alunas.map(a => `<option value="${a._id}">${a.nome}</option>`).join('');
+};
+
+window.fecharNovaAtividade = function() {
+  document.getElementById('form-atividade').style.display = 'none';
+};
+
+window.toggleAlunaSelect = function() {
+  const tipo = document.getElementById('na-tipo').value;
+  document.getElementById('na-aluna-wrap').style.display = tipo === 'individual' ? 'flex' : 'none';
+};
+
+window.salvarAtividade = async function() {
+  const titulo = document.getElementById('na-titulo').value.trim();
+  const link = document.getElementById('na-link').value.trim();
+  const tipo = document.getElementById('na-tipo').value;
+  const alunaId = document.getElementById('na-aluna').value;
+
+  if (!titulo || !link) { showToast('Título e link são obrigatórios.'); return; }
+  if (tipo === 'individual' && !alunaId) { showToast('Selecione o(a) aluno(a).'); return; }
+
+  try {
+    const { addDoc, collection: col } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await addDoc(col(db, 'atividades'), {
+      titulo,
+      descricao: document.getElementById('na-desc').value.trim(),
+      linkPdf: link,
+      modulo: document.getElementById('na-modulo').value,
+      tipo,
+      alunaId: tipo === 'individual' ? alunaId : '',
+      criadoEm: new Date().toISOString(),
+    });
+    showToast('Atividade publicada!');
+    fecharNovaAtividade();
+    ['na-titulo','na-desc','na-link'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('na-tipo').value = 'geral';
+    document.getElementById('na-modulo').value = '';
+    document.getElementById('na-aluna-wrap').style.display = 'none';
+    renderAtividadesAdmin();
+  } catch(e) {
+    console.error(e);
+    showToast('Erro ao publicar.');
+  }
+};
+
+async function renderAtividadesAdmin() {
+  const el = document.getElementById('ativ-admin-lista');
+  if (!el) return;
+  try {
+    const { getDocs, collection: col, query: qry, orderBy: ob } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(qry(col(db, 'atividades'), ob('criadoEm', 'desc')));
+    if (snap.empty) {
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--texto2)">Nenhuma atividade publicada ainda.</div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(d => {
+      const a = d.data();
+      const dt = a.criadoEm ? new Date(a.criadoEm).toLocaleDateString('pt-BR') : '—';
+      const dest = a.tipo === 'geral' ? '<span style="color:var(--verde);font-weight:600">Todos(as)</span>' : `<span style="color:var(--azul-m)">${a.alunaId}</span>`;
+      return `<div style="background:var(--branco);border-radius:10px;border:1px solid var(--borda);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-weight:600;font-size:14px">${a.titulo}</div>
+          <div style="font-size:12px;color:var(--texto2);margin-top:2px">${a.modulo ? a.modulo + ' · ' : ''}${dt} · Para: ${dest}</div>
+        </div>
+        <a href="${a.linkPdf}" target="_blank" style="padding:7px 14px;background:var(--azul-c);color:var(--azul-m);border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">Ver PDF ↗</a>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+// Call renderAtividadesAdmin when atividades page is shown
+const _origShowPage = window.showPage;
+window.showPage = function(page) {
+  _origShowPage.call(this, page);
+  if (page === 'atividades') renderAtividadesAdmin();
+};
 
 </script>
 </body>
