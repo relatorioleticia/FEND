@@ -1020,7 +1020,7 @@ async function resetDados() {
   showToast();
 }
 
-function renderTable() {
+window.renderTable = function() {
   const q = document.getElementById('search-input').value.toLowerCase();
   const fr = document.getElementById('filter-risco').value;
   const ff = document.getElementById('filter-fin').value;
@@ -1072,7 +1072,7 @@ function renderTable() {
   document.getElementById('stat-cavs').textContent = cavs;
 }
 
-function renderOnboarding() {
+window.renderOnboarding = function() {
   // KANBAN ONBOARDING
   // Colunas: Não iniciado / D+0 Boas-vindas / D+1 Check acesso / D+2 Grupo+Termo / D+3 Formulário / Concluído
   const obQ = (document.getElementById('ob-search')?.value || '').toLowerCase().trim();
@@ -1167,7 +1167,7 @@ window.moveObCard = async function(idx, targetCol) {
   renderOnboarding();
 }
 
-function renderCavs() {
+window.renderCavs = function() {
   const sel = document.getElementById('cav-filter-mod');
   const mod = (sel && sel.value) ? sel.value : 'M0';
 
@@ -1388,7 +1388,7 @@ window.removeEncontro = function(i) { _encontrosTemp.splice(i,1); renderEncontro
 function coletarEncontros() { return _encontrosTemp; }
 
 // ── SESSÕES INDIVIDUAIS ──────────────────────────────────────────────────────
-function renderSessoes(lista) {
+window.renderSessoes = function(lista) {
   const el = document.getElementById('sessoes-lista');
 
   // Atualiza opções de mentora dinamicamente
