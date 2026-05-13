@@ -809,7 +809,23 @@
 
 <div class="saved-toast" id="toast">Salvo com sucesso ✓</div>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, getDocs, setDoc, onSnapshot, query, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDaYBg9lnOD6EAgdh8Xx58d_svfx2EBLXU",
+  authDomain: "fend-crm-saga.firebaseapp.com",
+  projectId: "fend-crm-saga",
+  storageBucket: "fend-crm-saga.firebasestorage.app",
+  messagingSenderId: "130919382187",
+  appId: "1:130919382187:web:e7aae8b70c87c9b98e4bee"
+};
+
+const fbApp = initializeApp(FIREBASE_CONFIG);
+const db = getFirestore(fbApp);
+
 const MODULOS = ['M0','M1','M2','M3','M4','M5','M6','M7','M8'];
 
 const BASE = [
@@ -854,16 +870,66 @@ const BASE = [
 const SHEETS_API_KEY  = 'AIzaSyDZWFQxInq_cHu9ePyEWTE45UoL3uQQ0IM';
 const SHEETS_ID       = '1q-HrPXRQbK1dUSZ4b3KxVULhkm6dgBZojF_wW93NeU8';
 const SHEETS_RANGE    = 'BASE - Catarse!A2:AP200';
-const DATA_VERSION    = 'fend-v3';
 
-const savedVersion = localStorage.getItem('fend-version');
-let alunas = (savedVersion === DATA_VERSION && localStorage.getItem('fend-alunas'))
-  ? JSON.parse(localStorage.getItem('fend-alunas'))
-  : BASE.map(a => ({...a, cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}, onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''}, encontros:[], sessoes:[], drive:'', semaforo:'verde'}));
-if (savedVersion !== DATA_VERSION) { localStorage.setItem('fend-version', DATA_VERSION); save(); }
+let alunas = [];
 let editIdx = null;
+let _firestoreLoaded = false;
 
-function save() { localStorage.setItem('fend-alunas', JSON.stringify(alunas)); localStorage.setItem('fend-version', DATA_VERSION); }
+// ── FIREBASE SAVE/LOAD ────────────────────────────────────────────────────────
+function slugNome(nome) {
+  return nome.trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')
+    .substring(0,80);
+}
+
+async function save() {
+  if (editIdx !== null && alunas[editIdx]) {
+    const a = alunas[editIdx];
+    const id = a._id || slugNome(a.nome);
+    a._id = id;
+    await setDoc(doc(db, 'alunas', id), a);
+  } else {
+    // save all - used on reset
+    for (const a of alunas) {
+      const id = a._id || slugNome(a.nome);
+      a._id = id;
+      await setDoc(doc(db, 'alunas', id), a);
+    }
+  }
+}
+
+async function saveAll() {
+  for (const a of alunas) {
+    const id = a._id || slugNome(a.nome);
+    a._id = id;
+    await setDoc(doc(db, 'alunas', id), a);
+  }
+}
+
+function iniciarListenerFirestore() {
+  const q = query(collection(db, 'alunas'));
+  onSnapshot(q, (snap) => {
+    const fromFirestore = [];
+    snap.forEach(d => fromFirestore.push({ _id: d.id, ...d.data() }));
+    if (fromFirestore.length > 0) {
+      alunas = fromFirestore;
+    } else if (!_firestoreLoaded) {
+      // Firestore vazio: carrega BASE e salva
+      alunas = BASE.map(a => ({...a,
+        _id: slugNome(a.nome),
+        cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''},
+        onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''},
+        encontros:[], sessoes:[], drive:'', semaforo:'verde'
+      }));
+      saveAll();
+    }
+    _firestoreLoaded = true;
+    renderTable();
+    document.getElementById('sync-status').textContent = '';
+  });
+}
+
 
 function showPage(page) {
   document.querySelectorAll('.main').forEach(m => m.style.display = 'none');
@@ -910,7 +976,7 @@ function getCavMini(cavs) {
 function resetDados() {
   if (!confirm('Isso vai apagar todas as edições e recarregar a base original. Continuar?')) return;
   alunas = BASE.map(a => ({...a, cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}, onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''}}));
-  save();
+  await save();
   renderTable();
   showToast();
 }
@@ -1044,21 +1110,21 @@ function renderOnboarding() {
   }).join('');
 }
 
-function backObCard(idx, targetCol) {
+async function backObCard(idx, targetCol) {
   alunas[idx].onboarding.obcol = targetCol;
   // Ao voltar, limpa os checks do passo desfeito
   const map = {nao:['plataforma','aula0','grupo','form','termo'], d0:['grupo','form','termo'], d1:['grupo','form','termo'], d2:['form','termo'], d3:['termo']};
   if (map[targetCol]) map[targetCol].forEach(k => { alunas[idx].onboarding[k] = ''; });
-  save();
+  await save();
   renderOnboarding();
 }
 
-function moveObCard(idx, targetCol) {
+async function moveObCard(idx, targetCol) {
   alunas[idx].onboarding.obcol = targetCol;
   // Marcar checks automaticamente ao avançar
   const map = {d1:['plataforma','aula0'], d2:['plataforma','aula0','grupo','termo'], d3:['plataforma','aula0','grupo','form','termo'], ok:['plataforma','aula0','grupo','form','termo']};
   if (map[targetCol]) map[targetCol].forEach(k => { alunas[idx].onboarding[k] = 'sim'; });
-  save();
+  await save();
   renderOnboarding();
 }
 
@@ -1116,18 +1182,18 @@ function buildCavCard(a, i, mod) {
   </div>`;
 }
 
-function backCav(idx, mod) {
+async function backCav(idx, mod) {
   const cur = alunas[idx].cavs[mod] || '';
   alunas[idx].cavs[mod] = cur==='sim'?'pend':cur==='pend'?'':'';
-  save();
+  await save();
   renderCavs();
   renderTable();
 }
 
-function advanceCav(idx, mod) {
+async function advanceCav(idx, mod) {
   const cur = alunas[idx].cavs[mod] || '';
   alunas[idx].cavs[mod] = cur===''?'pend':cur==='pend'?'sim':'';
-  save();
+  await save();
   renderCavs();
   renderTable();
 }
@@ -1201,7 +1267,7 @@ function toggleCav(m) {
   el.querySelector('.cav-mod-status').textContent = next==='sim'?'Entregue':next==='pend'?'Pendente':'Não entregue';
 }
 
-function saveAluna() {
+async function saveAluna() {
   const ob = {
     plataforma: document.getElementById('ob-plataforma').value,
     aula0: document.getElementById('ob-aula0').value,
@@ -1233,13 +1299,17 @@ function saveAluna() {
     onboarding: ob,
   };
   if (editIdx !== null) {
-    const cavs = alunas[editIdx].cavs;
-    const obsMar = alunas[editIdx].obsMar;
-    alunas[editIdx] = {...data, cavs, obsMar};
+    const existing = alunas[editIdx];
+    const cavs = existing.cavs;
+    const obsMar = existing.obsMar || '';
+    const _id = existing._id || slugNome(data.nome);
+    alunas[editIdx] = {...data, cavs, obsMar, _id};
   } else {
-    alunas.push({...data, obsMar:'', cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}});
+    const _id = slugNome(data.nome);
+    alunas.push({...data, obsMar:'', _id, cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}});
+    editIdx = alunas.length - 1;
   }
-  save();
+  await save();
   renderTable();
   showToast();
 }
@@ -1355,6 +1425,21 @@ function showToast(msg) {
   setTimeout(()=>{ t.classList.remove('show'); if(msg) t.textContent = 'Salvo com sucesso ✓'; }, 2500);
 }
 
+
+
+async function resetDados() {
+  if (!confirm('Isso vai apagar todas as edições e recarregar a base original. Continuar?')) return;
+  alunas = BASE.map(a => ({...a,
+    _id: slugNome(a.nome),
+    cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''},
+    onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''}
+  }));
+  editIdx = null;
+  await saveAll();
+  renderTable();
+  showToast();
+}
+
 // ── GOOGLE SHEETS INTEGRATION ───────────────────────────────────────────────
 function parseSheetsRow(row) {
   // Colunas da planilha BASE - Catarse (0-indexed, linha 2 em diante):
@@ -1451,7 +1536,7 @@ async function sincSheets(manual = false) {
 
     const { merged, novasCount } = mergeComLocal(ativas);
     alunas = merged;
-    save();
+    await save();
     renderTable();
 
     const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
@@ -1474,6 +1559,8 @@ async function sincSheetsEIniciar() {
   await sincSheets(false); // depois sincroniza em background
 }
 
+
+
 // ── LOGIN ────────────────────────────────────────────────────────────────────
 const USUARIOS = [
   { usuario: 'Leticia', senha: 'Saga123', nome: 'Letícia' },
@@ -1487,7 +1574,7 @@ function fazerLogin() {
     localStorage.setItem('fend-auth', match.usuario);
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('sidebar-user').textContent = match.nome;
-    sincSheetsEIniciar();
+    iniciarListenerFirestore(); sincSheetsEIniciar();
   } else {
     document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
     document.getElementById('login-pass').value = '';
@@ -1506,12 +1593,13 @@ function verificarLogin() {
   if (match) {
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('sidebar-user').textContent = match.nome;
-    sincSheetsEIniciar();
+    iniciarListenerFirestore(); sincSheetsEIniciar();
   }
   // Se não autenticado, a tela de login já aparece por padrão
 }
 
 verificarLogin();
+
 </script>
 </body>
 </html>
