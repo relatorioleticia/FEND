@@ -809,6 +809,45 @@
 
 <div class="saved-toast" id="toast">Salvo com sucesso ✓</div>
 
+<script>
+// ── LOGIN (script normal, fora do módulo) ─────────────────────────────────────
+const USUARIOS = [
+  { usuario: 'Leticia', senha: 'Saga123', nome: 'Letícia' },
+];
+
+function fazerLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const s = document.getElementById('login-pass').value;
+  const match = USUARIOS.find(x => x.usuario.toLowerCase() === u.toLowerCase() && x.senha === s);
+  if (match) {
+    localStorage.setItem('fend-auth', match.usuario);
+    document.getElementById('login-overlay').classList.add('hidden');
+    document.getElementById('sidebar-user').textContent = match.nome;
+    if (window._iniciarFirestore) window._iniciarFirestore();
+  } else {
+    document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+function fazerLogout() {
+  localStorage.removeItem('fend-auth');
+  location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const auth = localStorage.getItem('fend-auth');
+  const match = auth ? USUARIOS.find(x => x.usuario === auth) : null;
+  if (match) {
+    document.getElementById('login-overlay').classList.add('hidden');
+    document.getElementById('sidebar-user').textContent = match.nome;
+    // Firebase module will call _iniciarFirestore when ready
+    window._autoLogin = true;
+  }
+});
+</script>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, doc, getDocs, setDoc, onSnapshot, query, orderBy }
@@ -1561,44 +1600,16 @@ async function sincSheetsEIniciar() {
 
 
 
-// ── LOGIN ────────────────────────────────────────────────────────────────────
-const USUARIOS = [
-  { usuario: 'Leticia', senha: 'Saga123', nome: 'Letícia' },
-];
+// ── LOGIN (handled by plain script above) ────────────────────────────────────
+window._iniciarFirestore = function() {
+  iniciarListenerFirestore();
+  sincSheetsEIniciar();
+};
 
-window.fazerLogin = function() {
-  const u = document.getElementById('login-user').value.trim();
-  const s = document.getElementById('login-pass').value;
-  const match = USUARIOS.find(x => x.usuario.toLowerCase() === u.toLowerCase() && x.senha === s);
-  if (match) {
-    localStorage.setItem('fend-auth', match.usuario);
-    document.getElementById('login-overlay').classList.add('hidden');
-    document.getElementById('sidebar-user').textContent = match.nome;
-    iniciarListenerFirestore(); sincSheetsEIniciar();
-  } else {
-    document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
-    document.getElementById('login-pass').value = '';
-    document.getElementById('login-pass').focus();
-  }
+// Auto-login if already authenticated
+if (window._autoLogin) {
+  window._iniciarFirestore();
 }
-
-window.fazerLogout = function() {
-  localStorage.removeItem('fend-auth');
-  location.reload();
-}
-
-function verificarLogin() {
-  const auth = localStorage.getItem('fend-auth');
-  const match = auth ? USUARIOS.find(x => x.usuario === auth) : null;
-  if (match) {
-    document.getElementById('login-overlay').classList.add('hidden');
-    document.getElementById('sidebar-user').textContent = match.nome;
-    iniciarListenerFirestore(); sincSheetsEIniciar();
-  }
-  // Se não autenticado, a tela de login já aparece por padrão
-}
-
-verificarLogin();
 
 </script>
 </body>
