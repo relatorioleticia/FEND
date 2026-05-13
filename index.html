@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FEND — Painel Pedagógico</title>
+<title>SAGA — Painel Pedagógico</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --azul: #0D2B6B;
-    --azul-m: #1A4DB5;
-    --azul-c: #D6E4F7;
+    --azul: #111111;
+    --azul-m: #333333;
+    --azul-c: #E8E8E8;
     --verde: #1A7A4A;
     --verde-c: #D6F0E3;
     --amarelo: #B5850A;
@@ -470,12 +470,12 @@
     <button class="login-btn" onclick="fazerLogin()">Entrar</button>
     <div class="login-error" id="login-error"></div>
   </div>
-  <div class="login-version">FEND © 2025</div>
+  <div class="login-version">SAGA © 2025</div>
 </div>
 
 <div class="sidebar">
   <div class="sidebar-logo">
-    <span class="fend">FEND</span>
+    <img src="data:image/png;base64,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" alt="SAGA" style="height:32px;display:block;margin-bottom:4px">
     <span class="sub">Painel Pedagógico</span>
   </div>
   <nav class="sidebar-nav">
@@ -499,16 +499,16 @@
 
   <div class="page-header">
     <div>
-      <div class="page-title">Alunas Ativas</div>
-      <div class="page-sub">Base Catarse — turma em andamento</div>
+      <div class="page-title">Alunos(as) Ativos(as)</div>
+      <div class="page-sub">Base SAGA</div>
     </div>
   </div>
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">Total Ativas</div>
+      <div class="stat-label">Total Ativos(as)</div>
       <div class="stat-value" id="stat-total">36</div>
-      <div class="stat-detail">Base Catarse</div>
+      <div class="stat-detail">Base SAGA</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Risco Alto</div>
@@ -543,7 +543,7 @@
       <option value="">Financeiro: todos</option>
       <option value="adimplente">Adimplente</option>
     </select>
-    <button class="btn-add" onclick="openModal(null)">+ Nova aluna</button>
+    <button class="btn-add" onclick="openModal(null)">+ Novo(a)</button>
     <button class="btn-add" onclick="sincSheets(true)" style="background:#1A7A4A;font-size:12px" title="Buscar novas alunas da planilha">↻ Sincronizar Sheets</button>
     <button class="btn-add" onclick="resetDados()" style="background:#6B7280;font-size:12px" title="Recarrega a base original">↺ Reset base</button>
   </div>
@@ -553,13 +553,13 @@
       <thead>
         <tr>
           <th>Nome</th>
+          <th>Status</th>
           <th>WhatsApp</th>
           <th>E-mail</th>
           <th>Produto</th>
           <th>Engajamento</th>
           <th>Risco Churn</th>
           <th>Financeiro</th>
-          <th>CAVs</th>
         </tr>
       </thead>
       <tbody id="tabela-body"></tbody>
@@ -616,7 +616,7 @@
 <div class="overlay" id="overlay" onclick="closeModalOutside(event)">
   <div class="modal" id="modal">
     <div class="modal-header">
-      <div class="modal-nome" id="modal-nome">Nova Aluna</div>
+      <div class="modal-nome" id="modal-nome">Novo(a) Aluno(a)</div>
       <div class="modal-sub" id="modal-sub"></div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -800,6 +800,26 @@
         </div>
       </div>
 
+      <div class="modal-section">
+        <div class="section-title">Observações do dia a dia</div>
+        <div class="field">
+          <textarea id="f-obs-dia" rows="4" placeholder="Acontecimentos, conversas importantes, situações relevantes..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="section-title">Status</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Status do(a) aluno(a)</label>
+            <select id="f-status">
+              <option value="ativo">Ativo(a)</option>
+              <option value="inativo">Inativo(a)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
 
 
       <button class="btn-save" onclick="saveAluna()">Salvar alterações</button>
@@ -823,7 +843,51 @@ function fazerLogin() {
     localStorage.setItem('fend-auth', match.usuario);
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('sidebar-user').textContent = match.nome;
-    if (window._iniciarFirestore) window._iniciarFirestore();
+    if (
+window.toggleStatus = async function(idx) {
+  alunas[idx].status = alunas[idx].status === 'inativo' ? 'ativo' : 'inativo';
+  editIdx = idx;
+  await save();
+  renderTable();
+};
+
+window.excluirAluna = async function(idx) {
+  const nome = alunas[idx].nome;
+  if (!confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) return;
+  const _id = alunas[idx]._id;
+  // Remove from Firestore
+  try {
+    const { doc: fbDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(fbDoc(db, 'alunas', _id));
+  } catch(e) { console.error(e); }
+  alunas.splice(idx, 1);
+  renderTable();
+  showToast('Excluído com sucesso');
+};
+
+window._iniciarFirestore) 
+window.toggleStatus = async function(idx) {
+  alunas[idx].status = alunas[idx].status === 'inativo' ? 'ativo' : 'inativo';
+  editIdx = idx;
+  await save();
+  renderTable();
+};
+
+window.excluirAluna = async function(idx) {
+  const nome = alunas[idx].nome;
+  if (!confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) return;
+  const _id = alunas[idx]._id;
+  // Remove from Firestore
+  try {
+    const { doc: fbDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(fbDoc(db, 'alunas', _id));
+  } catch(e) { console.error(e); }
+  alunas.splice(idx, 1);
+  renderTable();
+  showToast('Excluído com sucesso');
+};
+
+window._iniciarFirestore();
   } else {
     document.getElementById('login-error').textContent = 'Usuário ou senha incorretos.';
     document.getElementById('login-pass').value = '';
@@ -1034,15 +1098,22 @@ window.renderTable = function() {
   });
 
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">🔍</div>Nenhuma aluna encontrada</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🔍</div>Nenhum(a) aluno(a) encontrado(a)</div></td></tr>`;
   } else {
     tbody.innerHTML = filtered.map((a) => {
       const i = alunas.indexOf(a);
       const cavTotal = Object.values(a.cavs).filter(v=>v==='sim').length;
-      return `<tr onclick="openModal(${i})">
+      const statusAtivo = a.status !== 'inativo';
+      const prodTag = a.produto ? `<span class="badge badge-cinza" style="font-size:10px;margin-left:6px">${a.produto}</span>` : '';
+      return `<tr onclick="openModal(${i})" style="${statusAtivo ? '' : 'opacity:.5'}">
         <td>
-          <div class="td-nome">${a.nome}</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div class="td-nome">${a.nome}</div>${prodTag}
+          </div>
           <div class="td-insta">${a.insta||'—'}</div>
+        </td>
+        <td onclick="event.stopPropagation()">
+          <button onclick="toggleStatus(${i})" style="border:none;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;${statusAtivo ? 'background:var(--verde-c);color:var(--verde)' : 'background:#EEF0F5;color:#6B7280'}">${statusAtivo ? 'Ativo(a)' : 'Inativo(a)'}</button>
         </td>
         <td class="td-wpp">${a.wpp||'—'}</td>
         <td class="td-insta">${a.email||'—'}</td>
@@ -1050,12 +1121,9 @@ window.renderTable = function() {
         <td>${getEngBadge(a.eng)}</td>
         <td>${getRiscoBadge(a.risco)}</td>
         <td>${getFinBadge(a.fin)}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px">
-            ${getSemaforo(a.semaforo)}
-            <div class="cav-grid">${getCavMini(a.cavs)}</div>
-            <span style="font-size:11px;color:var(--texto2)">${cavTotal}/9</span>
-          </div>
+        <td>${getSemaforo(a.semaforo)}</td>
+        <td onclick="event.stopPropagation()">
+          <button onclick="excluirAluna(${i})" title="Excluir" style="background:var(--vermelho-c);color:var(--vermelho);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">🗑</button>
         </td>
       </tr>`;
     }).join('');
@@ -1102,7 +1170,7 @@ window.renderOnboarding = function() {
   // stats
   const concluidas = alunas.filter(a => getObCol(a)==='ok').length;
   document.getElementById('ob-stats').innerHTML =
-    `<span class="badge badge-verde">${concluidas} concluídas</span>
+    `<span class="badge badge-verde">${concluidas} concluídos(as)</span>
      <span class="badge badge-cinza">${alunas.length - concluidas} pendentes</span>`;
 
   container.innerHTML = OB_COLS.map(col => {
@@ -1120,7 +1188,7 @@ window.renderOnboarding = function() {
     };
 
     const cards = items.length === 0
-      ? `<div class="kb-empty">Nenhuma aluna aqui</div>`
+      ? `<div class="kb-empty">Nenhum(a) aqui</div>`
       : items.map(a => {
           const i = alunas.indexOf(a);
           const chips = OB_STEPS.map(k => {
@@ -1193,7 +1261,7 @@ window.renderCavs = function() {
   container.innerHTML = STATUS.map(s => {
     const items = alunas.filter(a => (a.cavs[mod] || '') === s.id && (!cavQ || a.nome.toLowerCase().includes(cavQ) || (a.insta||'').toLowerCase().includes(cavQ)));
     const cards = items.length === 0
-      ? '<div class="kb-empty">Nenhuma aluna aqui ainda</div>'
+      ? '<div class="kb-empty">Nenhum(a) aqui ainda</div>'
       : items.map(a => buildCavCard(a, alunas.indexOf(a), mod)).join('');
     return `<div class="kb-col" style="flex:1;min-width:200px">
       <div class="kb-col-header">
@@ -1245,8 +1313,19 @@ window.openModal = function(idx) {
     onboarding:{plataforma:'',aula0:'',grupo:'',form:'',termo:''},
     cavs:{M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''}
   };
-  document.getElementById('modal-nome').textContent = a.nome || 'Nova Aluna';
+  document.getElementById('modal-nome').textContent = a.nome || 'Novo(a) Aluno(a)';
   document.getElementById('modal-sub').textContent = a.insta || '';
+  // produto tag no modal
+  const existingTag = document.getElementById('modal-produto-tag');
+  if (existingTag) existingTag.remove();
+  if (a.produto) {
+    const tag = document.createElement('span');
+    tag.id = 'modal-produto-tag';
+    tag.className = 'badge badge-azul';
+    tag.style.cssText = 'margin-left:10px;font-size:11px;vertical-align:middle';
+    tag.textContent = a.produto;
+    document.getElementById('modal-nome').appendChild(tag);
+  }
   document.getElementById('f-nome').value = a.nome||'';
   document.getElementById('f-nasc').value = a.nasc||'';
   document.getElementById('f-cpf').value = a.cpf||'';
@@ -1276,6 +1355,8 @@ window.openModal = function(idx) {
   renderEncontros(_encontrosTemp);
   renderSessoes(_sessoesTemp);
   document.getElementById('f-obs').value = a.obs||'';
+  if (document.getElementById('f-obs-dia')) document.getElementById('f-obs-dia').value = a.obsDia||'';
+  if (document.getElementById('f-status')) document.getElementById('f-status').value = a.status||'ativo';
 
   // onboarding
   ['plataforma','aula0','grupo','form','termo'].forEach(k=>{
@@ -1335,6 +1416,8 @@ window.saveAluna = async function() {
     encontros: coletarEncontros(),
     sessoes: coletarSessoes(),
     obs: document.getElementById('f-obs').value,
+    obsDia: document.getElementById('f-obs-dia') ? document.getElementById('f-obs-dia').value : '',
+    status: document.getElementById('f-status') ? document.getElementById('f-status').value : 'ativo',
     onboarding: ob,
   };
   if (editIdx !== null) {
@@ -1519,7 +1602,7 @@ function parseSheetsRow(row) {
 }
 
 function mergeComLocal(novas) {
-  // Para cada aluna nova da planilha, preserva dados pedagógicos já salvos
+  // Para cada aluna da planilha, verifica se já existe no Firebase
   const localMap = {};
   alunas.forEach(a => { localMap[a.nome.trim().toLowerCase()] = a; });
 
@@ -1527,10 +1610,17 @@ function mergeComLocal(novas) {
   const merged = novas.map(nova => {
     const key = nova.nome.trim().toLowerCase();
     if (localMap[key]) {
-      // Aluna já existe: atualiza dados cadastrais, preserva dados pedagógicos
       const local = localMap[key];
+      // Aluna já existe: complementa dados cadastrais do Sheets
+      // mas PRESERVA tudo que já foi preenchido no painel ou pelo comercial
       return {
+        // Base: dados do Sheets (cadastrais)
         ...nova,
+        // Preserva _id e flag do comercial
+        _id: local._id || slugNome(nova.nome),
+        _cadastradoPorComercial: local._cadastradoPorComercial || false,
+        _cadastradoEm: local._cadastradoEm || '',
+        // Preserva dados pedagógicos e operacionais
         semaforo:   local.semaforo   || 'verde',
         drive:      local.drive      || '',
         encontros:  local.encontros  || [],
@@ -1538,14 +1628,27 @@ function mergeComLocal(novas) {
         onboarding: local.onboarding || {plataforma:'',aula0:'',grupo:'',form:'',termo:''},
         cavs:       local.cavs       || {M0:'',M1:'',M2:'',M3:'',M4:'',M5:'',M6:'',M7:'',M8:''},
         obs:        local.obs        || nova.obs,
+        // Preserva dados da venda cadastrados pelo comercial
+        valorPago:    local.valorPago    || nova.valorPago    || '',
+        valorEntrada: local.valorEntrada || '',
+        produto:      local.produto      || nova.produto      || '',
+        ciclo:        local.ciclo        || nova.ciclo        || '',
+        // Complementa campos cadastrais: usa Sheets se local estiver vazio
+        email: nova.email || local.email || '',
+        cpf:   nova.cpf   || local.cpf   || '',
+        rg:    nova.rg    || local.rg    || '',
+        nasc:  nova.nasc  || local.nasc  || '',
+        end:   nova.end   || local.end   || '',
+        insta: nova.insta || local.insta || '',
+        wpp:   nova.wpp   || local.wpp   || '',
       };
     } else {
       novasCount++;
-      return nova;
+      return { ...nova, _id: slugNome(nova.nome) };
     }
   });
 
-  // Mantém alunas locais que não vieram da planilha (adicionadas manualmente)
+  // Mantém alunas cadastradas pelo comercial que ainda não vieram da planilha
   alunas.forEach(local => {
     const key = local.nome.trim().toLowerCase();
     if (!novas.find(n => n.nome.trim().toLowerCase() === key)) {
@@ -1601,6 +1704,28 @@ async function sincSheetsEIniciar() {
 
 
 // ── LOGIN (handled by plain script above) ────────────────────────────────────
+
+window.toggleStatus = async function(idx) {
+  alunas[idx].status = alunas[idx].status === 'inativo' ? 'ativo' : 'inativo';
+  editIdx = idx;
+  await save();
+  renderTable();
+};
+
+window.excluirAluna = async function(idx) {
+  const nome = alunas[idx].nome;
+  if (!confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) return;
+  const _id = alunas[idx]._id;
+  // Remove from Firestore
+  try {
+    const { doc: fbDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(fbDoc(db, 'alunas', _id));
+  } catch(e) { console.error(e); }
+  alunas.splice(idx, 1);
+  renderTable();
+  showToast('Excluído com sucesso');
+};
+
 window._iniciarFirestore = function() {
   iniciarListenerFirestore();
   sincSheetsEIniciar();
@@ -1608,7 +1733,29 @@ window._iniciarFirestore = function() {
 
 // Auto-login if already authenticated
 if (window._autoLogin) {
-  window._iniciarFirestore();
+  
+window.toggleStatus = async function(idx) {
+  alunas[idx].status = alunas[idx].status === 'inativo' ? 'ativo' : 'inativo';
+  editIdx = idx;
+  await save();
+  renderTable();
+};
+
+window.excluirAluna = async function(idx) {
+  const nome = alunas[idx].nome;
+  if (!confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) return;
+  const _id = alunas[idx]._id;
+  // Remove from Firestore
+  try {
+    const { doc: fbDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(fbDoc(db, 'alunas', _id));
+  } catch(e) { console.error(e); }
+  alunas.splice(idx, 1);
+  renderTable();
+  showToast('Excluído com sucesso');
+};
+
+window._iniciarFirestore();
 }
 
 </script>
