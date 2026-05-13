@@ -1024,6 +1024,7 @@ function getSemaforo(v) {
   return `<div class="semaforo"><div class="dot ${dots[v]||'dot-cinza'}"></div></div>`;
 }
 function getCavMini(cavs) {
+  if (!cavs) return '';
   return MODULOS.map(m => {
     const v = cavs[m];
     const cls = v==='sim'?'cav-ok':v==='pend'?'cav-pend':'cav-no';
@@ -1046,7 +1047,7 @@ window.renderTable = function() {
   const tbody = document.getElementById('tabela-body');
 
   let filtered = alunas.filter((a,i) => {
-    const match = !q || a.nome.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.insta.toLowerCase().includes(q);
+    const match = !q || (a.nome||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q) || (a.insta||'').toLowerCase().includes(q);
     const risco = !fr || a.risco === fr;
     const fin = !ff || a.fin === ff;
     return match && risco && fin;
@@ -1055,7 +1056,7 @@ window.renderTable = function() {
   if (!filtered.length) {
     tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🔍</div>Nenhum(a) aluno(a) encontrado(a)</div></td></tr>`;
   } else {
-    tbody.innerHTML = filtered.map((a) => {
+    try { tbody.innerHTML = filtered.map((a) => {
       const i = alunas.indexOf(a);
       const cavTotal = Object.values(a.cavs).filter(v=>v==='sim').length;
       const statusAtivo = a.status !== 'inativo';
@@ -1081,14 +1082,14 @@ window.renderTable = function() {
           <button onclick="excluirAluna(${i})" title="Excluir" style="background:var(--vermelho-c);color:var(--vermelho);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">🗑</button>
         </td>
       </tr>`;
-    }).join('');
+    }).join(''); } catch(e) { console.error('renderTable error:', e); tbody.innerHTML = '<tr><td colspan=9>Erro ao renderizar: ' + e.message + '</td></tr>'; }
   }
 
   // stats
   const total = alunas.length;
   const risco = alunas.filter(a=>a.risco==='Alto').length;
   const adim = alunas.filter(a=>a.fin==='adimplente').length;
-  const cavs = alunas.reduce((acc,a)=>acc+Object.values(a.cavs).filter(v=>v==='sim').length,0);
+  const cavs = alunas.reduce((acc,a)=>acc+Object.values(a.cavs||{}).filter(v=>v==='sim').length,0);
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-risco').textContent = risco;
   document.getElementById('stat-adim').textContent = adim;
