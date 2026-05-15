@@ -581,17 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- TELA DE LOGIN -->
-<div class="login-overlay" id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">SAGA</div>
-    <div class="login-sub">Painel Pedagógico</div>
-    <input type="text" id="login-user" class="login-field" placeholder="Usuário" autocomplete="username" onkeydown="if(event.key==='Enter')fazerLogin()">
-    <input type="password" id="login-pass" class="login-field" placeholder="Senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')fazerLogin()">
-    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-  <div class="login-version">SAGA © 2025</div>
-</div>
+
 
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -2057,9 +2047,7 @@ async function sincSheetsEIniciar() {
 }
 
 // ── LOGIN ────────────────────────────────────────────────────────────────────
-const USUARIOS = [
-  { usuario: 'Leticia', senha: 'Saga123', nome: 'Letícia' },
-];
+
 
 function fazerLogin() {
   const u = document.getElementById('login-user').value.trim();
@@ -2078,22 +2066,12 @@ function fazerLogin() {
 }
 
 function fazerLogout() {
-  localStorage.removeItem('fend-auth');
-  location.reload();
+  sessionStorage.removeItem('saga-user');
+  window.location.href = 'index.html';
 }
 
-function verificarLogin() {
-  const auth = localStorage.getItem('fend-auth');
-  const match = auth ? USUARIOS.find(x => x.usuario === auth) : null;
-  if (match) {
-    document.getElementById('login-overlay').classList.add('hidden');
-    document.getElementById('sidebar-user').textContent = match.nome;
-    sincSheetsEIniciar();
-  }
-  // Se não autenticado, a tela de login já aparece por padrão
-}
+/* verificarLogin removido - autenticação via sessionStorage */
 
-verificarLogin();
 
 </script>
 </body>
