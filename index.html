@@ -105,7 +105,10 @@
   </div>
   <div class="field">
     <label>Senha</label>
-    <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
+    <div style="position:relative">
+      <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px">
+      <button type="button" onclick="toggleSenhaVis()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#999;font-size:18px;padding:0;line-height:1" id="eye-btn">👁</button>
+    </div>
   </div>
   <button class="btn" id="btn-entrar" onclick="entrar()">Entrar</button>
   <div class="error" id="erro"></div>
@@ -133,6 +136,18 @@ if (sessao) {
   const u = JSON.parse(sessao);
   window.location.href = u.perfil === 'aluno' ? 'area-aluno.html' : 'painel.html';
 }
+
+window.toggleSenhaVis = function() {
+  const input = document.getElementById('senha');
+  const btn = document.getElementById('eye-btn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+};
 
 window.entrar = async function() {
   const login = document.getElementById('login').value.trim().toLowerCase();
