@@ -1234,6 +1234,17 @@ function getFinBadge(v) {
   if (lc.includes('inad')) return `<span class="badge badge-vermelho">${v}</span>`;
   return `<span class="badge badge-cinza">${v}</span>`;
 }
+
+function getCavMini(cavs) {
+  if (!cavs) return '';
+  const MODULOS = ['M0','M1','M2','M3','M4','M5','M6','M7','M8'];
+  return MODULOS.map(m => {
+    const v = cavs[m] || '';
+    const cls = v === 'sim' ? 'cav-sim' : v === 'pend' ? 'cav-pend' : 'cav-no';
+    return `<div class="cav-item ${cls}" title="${m}">${m.replace('M','')}</div>`;
+  }).join('');
+}
+
 function getSemaforo(v) {
   const colors = {verde:'#27ae60',amarelo:'#f39c12',vermelho:'#e74c3c'};
   return `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colors[v]||'#ccc'}"></span>`;
