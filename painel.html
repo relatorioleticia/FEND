@@ -555,14 +555,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (perfil === 'admin') {
     document.getElementById('mod-admin').classList.add('active');
-    document.getElementById('nav-usuarios').style.display = 'flex';
+    const navU = document.getElementById('nav-usuarios');
+    if (navU) navU.style.display = 'flex';
   } else if (perfil === 'comercial') {
     document.getElementById('mod-comercial').classList.add('active');
   } else if (perfil === 'mentora') {
     document.getElementById('mod-mentoras').classList.add('active');
   } else {
     document.getElementById('mod-admin').classList.add('active');
-    document.getElementById('nav-usuarios').style.display = 'flex';
+    const navU = document.getElementById('nav-usuarios');
+    if (navU) navU.style.display = 'flex';
   }
 });
 
@@ -1533,7 +1535,7 @@ window.renderTable = function() {
   document.getElementById('stat-total').textContent = alunas.length;
   document.getElementById('stat-risco').textContent = alunas.filter(a=>a.risco==='Alto').length;
   document.getElementById('stat-adim').textContent = alunas.filter(a=>a.fin==='adimplente'||a.fin==='Adimplente').length;
-  document.getElementById('stat-cavs').textContent = alunas.reduce((acc,a)=>acc+Object.values(a.cavs||{}).filter(v=>v==='sim').length,0);
+  const statCavs = document.getElementById('stat-cavs'); if(statCavs) statCavs.textContent = alunas.reduce((acc,a)=>acc+Object.values(a.cavs||{}).filter(v=>v==='sim').length,0);
 
   if (!filtered.length) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--texto2)">🔍 Nenhum(a) encontrado(a)</td></tr>`;
@@ -1563,7 +1565,11 @@ window.showToast=function(msg){ const t=document.getElementById('toast'); t.text
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 const _perfil = _user?.perfil || 'admin';
+
+// Show nav-usuarios for admin (safe to call here since module runs after DOM)
 if (_perfil === 'admin') {
+  const navU = document.getElementById('nav-usuarios');
+  if (navU) navU.style.display = 'flex';
   iniciarListenerFirestore();
   sincSheetsEIniciar && sincSheetsEIniciar();
 } else if (_perfil === 'comercial') {
@@ -2165,18 +2171,8 @@ function fazerLogout() {
   location.reload();
 }
 
-function verificarLogin() {
-  const auth = localStorage.getItem('fend-auth');
-  const match = auth ? USUARIOS.find(x => x.usuario === auth) : null;
-  if (match) {
-    document.getElementById('login-overlay').classList.add('hidden');
-    document.getElementById('sidebar-user').textContent = match.nome;
-    sincSheetsEIniciar();
-  }
-  // Se não autenticado, a tela de login já aparece por padrão
-}
+/* verificarLogin removed */
 
-verificarLogin();
 
 </script>
 </body>
