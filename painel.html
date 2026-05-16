@@ -660,9 +660,7 @@ window.toggleSenha = function(inputId, btn) {
       <div class="stat-value" id="stat-adim" style="color:var(--verde)">—</div>
       <div class="stat-detail">Status financeiro ok</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">CAVs Entregues</div>
-      <div class="stat-value" id="stat-cavs">—</div>
+    
       <div class="stat-detail">Total acumulado</div>
     </div>
   </div>
@@ -1586,57 +1584,7 @@ if (_perfil === 'admin') {
 
 // alunas loaded via Firebase
 
-function renderTable() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  const fr = document.getElementById('filter-risco').value;
-  const ff = document.getElementById('filter-fin').value;
-  const tbody = document.getElementById('tabela-body');
-
-  let filtered = alunas.filter((a,i) => {
-    const match = !q || a.nome.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.insta.toLowerCase().includes(q);
-    const risco = !fr || a.risco === fr;
-    const fin = !ff || a.fin === ff;
-    return match && risco && fin;
-  });
-
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">🔍</div>Nenhuma aluna encontrada</div></td></tr>`;
-  } else {
-    tbody.innerHTML = filtered.map((a) => {
-      const i = alunas.indexOf(a);
-      const cavTotal = Object.values(a.cavs).filter(v=>v==='sim').length;
-      return `<tr onclick="openModal(${i})">
-        <td>
-          <div class="td-nome">${a.nome}</div>
-          <div class="td-insta">${a.insta||'—'}</div>
-        </td>
-        <td class="td-wpp">${a.wpp||'—'}</td>
-        <td class="td-insta">${a.email||'—'}</td>
-        <td><span class="badge badge-azul">${a.produto||'—'}</span></td>
-        <td>${getEngBadge(a.eng)}</td>
-        <td>${getRiscoBadge(a.risco)}</td>
-        <td>${getFinBadge(a.fin)}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px">
-            ${getSemaforo(a.semaforo)}
-            <div class="cav-grid">${getCavMini(a.cavs)}</div>
-            <span style="font-size:11px;color:var(--texto2)">${cavTotal}/9</span>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
-  }
-
-  // stats
-  const total = alunas.length;
-  const risco = alunas.filter(a=>a.risco==='Alto').length;
-  const adim = alunas.filter(a=>a.fin==='adimplente').length;
-  const cavs = alunas.reduce((acc,a)=>acc+Object.values(a.cavs).filter(v=>v==='sim').length,0);
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-risco').textContent = risco;
-  document.getElementById('stat-adim').textContent = adim;
-  document.getElementById('stat-cavs').textContent = cavs;
-}
+/* renderTable defined above as window.renderTable */
 
 function renderOnboarding() {
   // KANBAN ONBOARDING
