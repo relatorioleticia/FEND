@@ -115,6 +115,19 @@
 </div>
 <div class="footer">SAGA © 2025</div>
 
+<script>
+function toggleSenhaVis() {
+  const input = document.getElementById('senha');
+  const btn = document.getElementById('eye-btn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+</script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs }
@@ -136,18 +149,6 @@ if (sessao) {
   const u = JSON.parse(sessao);
   window.location.href = u.perfil === 'aluno' ? 'area-aluno.html' : 'painel.html';
 }
-
-window.toggleSenhaVis = function() {
-  const input = document.getElementById('senha');
-  const btn = document.getElementById('eye-btn');
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁';
-  }
-};
 
 window.entrar = async function() {
   const login = document.getElementById('login').value.trim().toLowerCase();
