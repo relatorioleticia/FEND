@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --azul: #0D2B6B;
-    --azul-m: #1A4DB5;
-    --azul-c: #D6E4F7;
+    --azul: #111111;
+    --azul-m: #333333;
+    --azul-c: #E8E8E8;
     --verde: #1A7A4A;
     --verde-c: #D6F0E3;
     --amarelo: #B5850A;
@@ -691,14 +691,13 @@ window.toggleSenha = function(inputId, btn) {
       <thead>
         <tr>
           <th>Nome</th>
+          <th>Status</th>
           <th>WhatsApp</th>
-          <th>E-mail</th>
-          <th>Produto</th>
           <th>Engajamento</th>
           <th>Risco Churn</th>
-          <th>Financeiro</th>
-          <th>CAVs</th>
-        </tr>
+          <th>●</th>
+          <th></th>
+          </tr>
       </thead>
       <tbody id="tabela-body"></tbody>
     </table>
@@ -1217,6 +1216,29 @@ function iniciarListenerFirestore() {
   });
 }
 
+
+function getEngBadge(v) {
+  if (!v) return '<span class="badge badge-cinza">—</span>';
+  const map = {Alto:'verde',Médio:'amarelo',Baixo:'vermelho'};
+  return `<span class="badge badge-${map[v]||'cinza'}">${v}</span>`;
+}
+function getRiscoBadge(v) {
+  if (!v) return '<span class="badge badge-cinza">—</span>';
+  const map = {Alto:'vermelho',Médio:'amarelo',Baixo:'verde'};
+  return `<span class="badge badge-${map[v]||'cinza'}">${v}</span>`;
+}
+function getFinBadge(v) {
+  if (!v) return '<span class="badge badge-cinza">—</span>';
+  const lc = v.toLowerCase();
+  if (lc.includes('adim')) return `<span class="badge badge-verde">${v}</span>`;
+  if (lc.includes('inad')) return `<span class="badge badge-vermelho">${v}</span>`;
+  return `<span class="badge badge-cinza">${v}</span>`;
+}
+function getSemaforo(v) {
+  const colors = {verde:'#27ae60',amarelo:'#f39c12',vermelho:'#e74c3c'};
+  return `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colors[v]||'#ccc'}"></span>`;
+}
+
 // ── TABELA MELHORADA ──────────────────────────────────────────────────────────
 window.toggleStatus = async function(idx, e) {
   e && e.stopPropagation();
@@ -1473,6 +1495,15 @@ window.saveAluna = async function() {
 };
 
 // ── RENDERIZAÇÃO DA TABELA (override com status/lixeira) ──────────────────────
+window.renderOnboarding = function() {
+  // Will be overridden by CRM functions below if they define it
+  const el = document.getElementById('page-onboarding');
+  if (el && el.style.display !== 'none') {
+    // trigger existing renderOnboarding from core
+    if (typeof renderOnboarding === 'function') renderOnboarding();
+  }
+};
+
 window.renderTable = function() {
   const q = (document.getElementById('search-input')?.value||'').toLowerCase();
   const fr = document.getElementById('filter-risco')?.value||'';
@@ -1507,15 +1538,9 @@ window.renderTable = function() {
         <td><div style="display:flex;align-items:center;gap:4px"><div class="td-nome">${a.nome}</div>${prodTag}</div><div class="td-insta">${a.insta||'—'}</div></td>
         <td onclick="event.stopPropagation()"><button class="status-btn ${ativo?'status-ativo':'status-inativo'}" onclick="toggleStatus(${i},event)">${ativo?'Ativo(a)':'Inativo(a)'}</button></td>
         <td class="td-wpp">${a.wpp||'—'}</td>
-        <td>${a.email||'—'}</td>
         <td>${getEngBadge(a.eng)}</td>
         <td>${getRiscoBadge(a.risco)}</td>
-        <td>${getFinBadge(a.fin)}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:6px">
-            ${getSemaforo(a.semaforo)}
-          </div>
-        </td>
+        <td>${getSemaforo(a.semaforo)}</td>
         <td onclick="event.stopPropagation()"><button class="del-btn" onclick="excluirAluna(${i},event)">🗑</button></td>
       </tr>`;
     }).join('');
