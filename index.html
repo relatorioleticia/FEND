@@ -143,11 +143,19 @@ const app = initializeApp({
 });
 const db = getFirestore(app);
 
+function redirectByPerfil(perfil) {
+  if (perfil === 'aluno') return 'area-aluno.html';
+  if (perfil === 'comercial') return 'painel-comercial.html';
+  if (perfil === 'mentora') return 'painel-mentoras.html';
+  if (perfil === 'admin') return 'painel-pedagogico.html';
+  return 'index.html';
+}
+
 // Se já tiver sessão, redireciona
 const sessao = sessionStorage.getItem('saga-user');
 if (sessao) {
   const u = JSON.parse(sessao);
-  window.location.href = u.perfil === 'aluno' ? 'area-aluno.html' : 'painel.html';
+  window.location.href = redirectByPerfil(u.perfil);
 }
 
 window.entrar = async function() {
@@ -178,11 +186,7 @@ window.entrar = async function() {
     const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
     sessionStorage.setItem('saga-user', JSON.stringify(user));
 
-    if (user.perfil === 'aluno') {
-      window.location.href = 'area-aluno.html';
-    } else {
-      window.location.href = 'painel.html';
-    }
+    window.location.href = redirectByPerfil(user.perfil);
   } catch(e) {
     console.error(e);
     erro.textContent = 'Erro de conexão. Tente novamente.';
