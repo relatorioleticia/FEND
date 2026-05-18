@@ -1715,19 +1715,31 @@ window.salvarAtividade = async function() {
   const aId = document.getElementById('na-aluna').value;
   if (!t || !l) { alert('Título e link são obrigatórios.'); return; }
   if (tipo === 'individual' && !aId) { alert('Selecione o(a) aluno(a).'); return; }
-  await addDoc(collection(db, 'atividades'), {
+
+  const formEl = document.getElementById('form-ativ');
+  const editId = formEl.dataset.editId;
+  const data = {
     titulo: t,
     descricao: document.getElementById('na-desc').value.trim(),
     linkPdf: l,
     modulo: document.getElementById('na-modulo').value,
     tipo,
     alunaId: tipo === 'individual' ? aId : '',
-    criadoEm: new Date().toISOString(),
-  });
-  document.getElementById('form-ativ').style.display = 'none';
+  };
+
+  if (editId) {
+    await updateDoc(doc(db, 'atividades', editId), data);
+    delete formEl.dataset.editId;
+  } else {
+    data.criadoEm = new Date().toISOString();
+    await addDoc(collection(db, 'atividades'), data);
+  }
+
+  formEl.style.display = 'none';
   ['na-titulo','na-desc','na-link'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('na-tipo').value = 'geral';
   document.getElementById('na-aluna-wrap').style.display = 'none';
+  document.querySelector('#form-ativ .btn-add').textContent = 'Publicar';
   renderAtivLista();
 };
 
@@ -1735,42 +1747,92 @@ async function renderAtivLista() {
   const el = document.getElementById('ativ-lista');
   if (!el) return;
   try {
-    const snap = await getDocs(query(collection(db, 'atividades'), orderBy('criadoEm', 'desc')));
+    const snap = await getDocs(collection(db, 'atividades'));
     if (snap.empty) {
       el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--texto2)">Nenhuma atividade publicada.</div>';
       return;
     }
-    el.innerHTML = snap.docs.map(d => {
-      const a = d.data();
+    const docs = [];
+    snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+    docs.sort((a,b) => (b.criadoEm||'').localeCompare(a.criadoEm||''));
+    el.innerHTML = docs.map(a => {
       const dt = a.criadoEm ? new Date(a.criadoEm).toLocaleDateString('pt-BR') : '—';
       const dest = a.tipo === 'geral' ? '<span style="color:var(--verde);font-weight:600">Todos(as)</span>' : `<span style="color:var(--azul-m)">${a.alunaId}</span>`;
       return `<div style="background:var(--branco);border-radius:10px;border:1px solid var(--borda);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div>
+        <div style="flex:1;min-width:0">
           <div style="font-weight:600;font-size:14px">${a.titulo}</div>
           <div style="font-size:12px;color:var(--texto2);margin-top:2px">${a.modulo ? a.modulo + ' · ' : ''}${dt} · Para: ${dest}</div>
+          ${a.descricao ? `<div style="font-size:12px;color:var(--texto2);margin-top:4px">${a.descricao}</div>` : ''}
         </div>
-        <a href="${a.linkPdf}" target="_blank" style="padding:7px 14px;background:var(--azul-c);color:var(--azul-m);border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">Ver PDF ↗</a>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <a href="${a.linkPdf}" target="_blank" style="padding:7px 14px;background:var(--azul-c);color:var(--azul-m);border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">Ver PDF ↗</a>
+          <button onclick="editarAtividade('${a.id}')" style="background:#FFF3CD;color:#B5850A;border:none;border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:13px" title="Editar">✏️</button>
+          <button onclick="excluirAtividade('${a.id}')" style="background:var(--vermelho-c);color:var(--vermelho);border:none;border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:13px" title="Excluir">🗑</button>
+        </div>
       </div>`;
     }).join('');
   } catch(e) {
+    console.error(e);
     el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--vermelho)">Erro ao carregar.</div>';
   }
 }
+
+window.editarAtividade = async function(id) {
+  try {
+    const d = await getDoc(doc(db, 'atividades', id));
+    if (!d.exists()) return;
+    const a = d.data();
+    document.getElementById('form-ativ').style.display = 'block';
+    document.getElementById('form-ativ').dataset.editId = id;
+    document.getElementById('na-titulo').value = a.titulo || '';
+    document.getElementById('na-desc').value = a.descricao || '';
+    document.getElementById('na-link').value = a.linkPdf || '';
+    document.getElementById('na-modulo').value = a.modulo || '';
+    document.getElementById('na-tipo').value = a.tipo || 'geral';
+    if (a.tipo === 'individual') {
+      const sel = document.getElementById('na-aluna');
+      sel.innerHTML = '<option value="">Selecione...</option>' + window.alunas.map(al => `<option value="${al._id}" ${al._id===a.alunaId?'selected':''}>${al.nome}</option>`).join('');
+      document.getElementById('na-aluna-wrap').style.display = 'flex';
+    }
+    document.querySelector('#form-ativ .btn-add').textContent = 'Atualizar';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) { console.error(e); }
+};
+
+window.excluirAtividade = async function(id) {
+  if (!confirm('Excluir esta atividade?')) return;
+  try {
+    await deleteDoc(doc(db, 'atividades', id));
+    renderAtivLista();
+  } catch(e) { console.error(e); alert('Erro ao excluir.'); }
+};
 
 // === Clube Catarse ===
 window.salvarClube = async function() {
   const t = document.getElementById('nc-titulo').value.trim();
   const c = document.getElementById('nc-corpo').value.trim();
   if (!t || !c) { alert('Título e conteúdo são obrigatórios.'); return; }
-  await addDoc(collection(db, 'clube'), {
+
+  const formEl = document.getElementById('form-clube');
+  const editId = formEl.dataset.editId;
+  const data = {
     titulo: t,
     corpo: c,
     link: document.getElementById('nc-link').value.trim(),
     linkLabel: document.getElementById('nc-link-label').value.trim(),
-    criadoEm: new Date().toISOString(),
-  });
-  document.getElementById('form-clube').style.display = 'none';
+  };
+
+  if (editId) {
+    await updateDoc(doc(db, 'clube', editId), data);
+    delete formEl.dataset.editId;
+  } else {
+    data.criadoEm = new Date().toISOString();
+    await addDoc(collection(db, 'clube'), data);
+  }
+
+  formEl.style.display = 'none';
   ['nc-titulo','nc-corpo','nc-link','nc-link-label'].forEach(id => document.getElementById(id).value = '');
+  document.querySelector('#form-clube .btn-add').textContent = 'Publicar';
   renderClubeLista();
 };
 
@@ -1778,27 +1840,58 @@ async function renderClubeLista() {
   const el = document.getElementById('clube-lista');
   if (!el) return;
   try {
-    const snap = await getDocs(query(collection(db, 'clube'), orderBy('criadoEm', 'desc')));
+    const snap = await getDocs(collection(db, 'clube'));
     if (snap.empty) {
       el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--texto2)">Nenhum aviso publicado.</div>';
       return;
     }
-    el.innerHTML = snap.docs.map(d => {
-      const a = d.data();
+    const docs = [];
+    snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+    docs.sort((a,b) => (b.criadoEm||'').localeCompare(a.criadoEm||''));
+    el.innerHTML = docs.map(a => {
       const dt = a.criadoEm ? new Date(a.criadoEm).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'}) : '—';
-      return `<div style="background:var(--branco);border-radius:12px;border:1px solid var(--borda);padding:20px 24px;margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-          <div style="font-size:15px;font-weight:600">${a.titulo}</div>
-          <div style="font-size:11px;color:var(--texto2)">${dt}</div>
+      return `<div style="background:var(--branco);border-radius:12px;border:1px solid var(--borda);padding:20px 24px;margin-bottom:12px;position:relative">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px">
+          <div style="font-size:15px;font-weight:600;flex:1">${a.titulo}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <span style="font-size:11px;color:var(--texto2)">${dt}</span>
+            <button onclick="editarClube('${a.id}')" style="background:#FFF3CD;color:#B5850A;border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:12px" title="Editar">✏️</button>
+            <button onclick="excluirClube('${a.id}')" style="background:var(--vermelho-c);color:var(--vermelho);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:12px" title="Excluir">🗑</button>
+          </div>
         </div>
         <div style="font-size:13px;color:var(--texto2);line-height:1.7;white-space:pre-wrap">${a.corpo}</div>
         ${a.link ? `<div style="margin-top:10px"><a href="${a.link}" target="_blank" style="font-size:12px;color:var(--azul-m);font-weight:500">${a.linkLabel || 'Acessar'} ↗</a></div>` : ''}
       </div>`;
     }).join('');
   } catch(e) {
+    console.error(e);
     el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--vermelho)">Erro ao carregar.</div>';
   }
 }
+
+window.editarClube = async function(id) {
+  try {
+    const d = await getDoc(doc(db, 'clube', id));
+    if (!d.exists()) return;
+    const a = d.data();
+    document.getElementById('form-clube').style.display = 'block';
+    document.getElementById('form-clube').dataset.editId = id;
+    document.getElementById('nc-titulo').value = a.titulo || '';
+    document.getElementById('nc-corpo').value = a.corpo || '';
+    document.getElementById('nc-link').value = a.link || '';
+    document.getElementById('nc-link-label').value = a.linkLabel || '';
+    document.querySelector('#form-clube .btn-add').textContent = 'Atualizar';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) { console.error(e); }
+};
+
+window.excluirClube = async function(id) {
+  if (!confirm('Excluir este aviso?')) return;
+  try {
+    await deleteDoc(doc(db, 'clube', id));
+    renderClubeLista();
+  } catch(e) { console.error(e); alert('Erro ao excluir.'); }
+};
 
 // === Usuários ===
 window.gerarUsuariosAlunas = async function() {
