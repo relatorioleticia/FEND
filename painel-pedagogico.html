@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Pedagógico SAGA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #F6F5F1; --panel: #FFFFFF; --navy: #1E2A38; --navy-soft: #2B3A4C;
+    --teal: #3B7A78; --teal-soft: #E4EFEE; --amber: #C97A2E; --amber-soft: #F7E9D8;
+    --green: #4F8A5B; --green-soft: #E5F0E6; --red: #B14B4B; --red-soft: #F5E4E4;
+    --line: #E4E1D8; --text: #1E2A38; --text-soft: #6B7280;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Inter', system-ui, sans-serif; background:var(--bg); color:var(--text);}
+
+  /* LOGIN */
+  #login-screen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--navy);
+  }
+  .login-card{
+    background:var(--panel); border-radius:14px; padding:36px 32px; width:100%; max-width:340px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3); text-align:center;
+  }
+  .login-card h1{font-family:'Space Grotesk', sans-serif; font-size:20px; margin-bottom:4px; color:var(--navy);}
+  .login-card p{font-size:12.5px; color:var(--text-soft); margin-bottom:20px;}
+  .login-card input{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:8px;
+    font-size:14px; margin-bottom:12px;
+  }
+  .login-card button{
+    width:100%; background:var(--navy); color:#fff; border:none; border-radius:8px;
+    padding:11px; font-size:14px; font-weight:600; cursor:pointer;
+  }
+  .login-error{color:var(--red); font-size:12px; margin-top:8px; display:none;}
+  .login-error.show{display:block;}
+
+  /* APP LAYOUT */
+  #app{display:none; min-height:100vh;}
+  #app.show{display:flex;}
+
+  .sidebar{width:220px; background:var(--navy); color:#fff; padding:24px 16px; display:flex; flex-direction:column; gap:4px; flex-shrink:0;}
+  .sidebar .logo{font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:700; margin-bottom:28px; padding:0 8px;}
+  .sidebar .logo span{color:#8FB8B6;}
+  .nav-item{display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:8px; font-size:14px; font-weight:500; color:#C7CDD6; cursor:pointer;}
+  .nav-item:hover{background:var(--navy-soft);}
+  .nav-item.active{background:var(--navy-soft); color:#fff;}
+  .nav-item .dot{width:6px;height:6px;border-radius:50%;background:#8FB8B6; flex-shrink:0;}
+  .sidebar .foot{margin-top:auto; font-size:11px; color:#6B7A8C; padding:0 8px; cursor:pointer;}
+
+  .main{flex:1; padding:28px 36px; overflow-x:hidden;}
+  .topbar{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .topbar h1{font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:600;}
+  .topbar p{color:var(--text-soft); font-size:13px; margin-top:4px;}
+  .topbar-actions{display:flex; gap:8px; align-items:center;}
+  .search{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 14px; font-size:13px; width:220px; color:var(--text);}
+  .btn-action{
+    background:var(--navy); color:#fff; border:none; border-radius:8px; padding:9px 14px;
+    font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .btn-action.secondary{background:var(--panel); color:var(--navy); border:1px solid var(--line);}
+
+  .filters{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .filters.hide{display:none;}
+  .filter-select{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:12.5px; color:var(--text); cursor:pointer;}
+
+  .board{display:flex; gap:16px; align-items:flex-start; overflow-x:auto; padding-bottom:16px;}
+  .board.hide{display:none;}
+  .column{width:250px; flex-shrink:0; min-height:60px; border-radius:10px; transition:background .15s;}
+  .column-head{display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-soft); padding:0 4px 10px 4px;}
+  .column-head .count{background:var(--line); border-radius:10px; padding:1px 8px; font-size:11px; color:var(--text);}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(30,42,56,.04); cursor:pointer;}
+  .card:hover{box-shadow:0 4px 10px rgba(30,42,56,.08);}
+  .card .name{font-size:14px; font-weight:600; margin-bottom:8px;}
+  .card .row{font-size:12px; color:var(--text-soft); margin-bottom:4px;}
+  .produto-tag{display:inline-block; font-size:10.5px; font-weight:600; padding:3px 8px; border-radius:5px; margin-bottom:4px;}
+  .produto-tag.fend{background:var(--teal-soft); color:var(--teal);}
+  .produto-tag.catarse{background:var(--amber-soft); color:var(--amber);}
+  .produto-tag.ignis{background:var(--red-soft); color:var(--red);}
+  .produto-tag.default{background:var(--line); color:var(--text-soft);}
+  .empty-col{font-size:12px; color:#B7BCC4; font-style:italic; padding:8px 4px;}
+
+  /* PROCESSOS */
+  .processos{display:none;}
+  .processos.show{display:block;}
+  .proc-category{background:var(--panel); border:1px solid var(--line); border-radius:10px; margin-bottom:12px; overflow:hidden;}
+  .proc-head{padding:14px 18px; display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer;}
+  .proc-head .title{font-size:14px; font-weight:600;}
+  .proc-head .sub{font-size:11.5px; color:var(--text-soft); margin-top:2px;}
+  .proc-head .updated{font-size:11px; color:var(--text-soft); white-space:nowrap;}
+  .people-tags{margin-top:6px; display:flex; gap:5px; flex-wrap:wrap;}
+  .ptag{font-size:10px; font-weight:600; padding:2px 7px; border-radius:5px;}
+  .ptag.aluno{background:var(--teal-soft); color:var(--teal);}
+  .ptag.mentora{background:var(--amber-soft); color:var(--amber);}
+  .ptag.cs{background:var(--navy-soft); color:#fff;}
+  .ptag.comercial{background:var(--green-soft); color:var(--green);}
+  .ptag.convidado{background:var(--red-soft); color:var(--red);}
+  .proc-body{padding:0 18px 16px 18px; font-size:13px; color:var(--text-soft); border-top:1px solid var(--line); padding-top:12px; display:none;}
+  .proc-category.open .proc-body{display:block;}
+  .proc-body ol{padding-left:18px; display:flex; flex-direction:column; gap:6px; margin-bottom:10px;}
+  .proc-body textarea, .proc-body input{width:100%; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12.5px; font-family:'Inter',sans-serif; margin-bottom:6px;}
+  .proc-edit-btn{font-size:11px; color:var(--teal); cursor:pointer; text-decoration:underline; background:none; border:none;}
+  .step-row{display:flex; gap:6px; align-items:center; margin-bottom:4px;}
+  .step-row input{flex:1; margin-bottom:0;}
+  .remove-x{color:var(--red); cursor:pointer; font-size:13px; padding:2px 6px;}
+  .add-btn{background:var(--navy); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:16px;}
+  .link-item{font-size:12px; color:var(--teal); margin-bottom:4px; display:block;}
+
+  /* MODAL */
+  .overlay{display:none; position:fixed; inset:0; background:rgba(30,42,56,.45); align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto; z-index:100;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--panel); border-radius:14px; width:100%; max-width:640px; box-shadow:0 20px 50px rgba(0,0,0,.2);}
+  .modal-head{padding:22px 26px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-start;}
+  .modal-head h2{font-family:'Space Grotesk', sans-serif; font-size:20px; font-weight:600;}
+  .modal-head .tagline{font-size:12.5px; color:var(--text-soft); margin-top:4px;}
+  .modal-actions{display:flex; gap:8px;}
+  .close-btn, .edit-btn, .save-btn{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:7px 12px; font-size:12.5px; color:var(--text); cursor:pointer;}
+  .save-btn{background:var(--teal); color:#fff; border-color:var(--teal); display:none;}
+  .modal-body{padding:8px 26px 26px 26px;}
+  .section{padding:18px 0; border-bottom:1px solid var(--line);}
+  .section:last-child{border-bottom:none;}
+  .section h3{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); margin-bottom:12px;}
+  .field-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px 18px;}
+  .field{font-size:13px;}
+  .field label{display:block; font-size:11px; color:var(--text-soft); margin-bottom:2px;}
+  .field .val{font-weight:500; min-height:20px;}
+  .field input, .field select, .field textarea{width:100%; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:13px; font-family:'Inter',sans-serif; display:none;}
+  .modal.editing .field .val{display:none;}
+  .modal.editing .field input, .modal.editing .field select, .modal.editing .field textarea{display:block;}
+  .full-width{grid-column:1/-1;}
+  .interaction{padding:8px 0; border-bottom:1px dashed var(--line); font-size:13px;}
+  .interaction:last-child{border-bottom:none;}
+  .interaction .date{font-size:11px; color:var(--text-soft);}
+  .new-interaction{display:flex; gap:8px; margin-top:10px;}
+  .new-interaction input{flex:1; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12.5px;}
+  .new-interaction button{background:var(--navy); color:#fff; border:none; border-radius:6px; padding:6px 12px; font-size:12px; cursor:pointer;}
+  .delete-aluno{color:var(--red); font-size:11.5px; cursor:pointer; text-decoration:underline; margin-top:14px; display:inline-block;}
+
+  .loading{padding:40px; text-align:center; color:var(--text-soft); font-size:13px;}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Painel Pedagógico</h1>
+    <p>SAGA</p>
+    <input type="password" id="login-password" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter') tentarLogin()">
+    <button onclick="tentarLogin()">Entrar</button>
+    <div class="login-error" id="login-error">Senha incorreta.</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="sidebar">
+    <div class="logo">PEDAGÓGICO <span>SAGA</span></div>
+    <div class="nav-item active" id="nav-alunos" onclick="showAlunos()"><div class="dot"></div>Alunos</div>
+    <div class="nav-item" id="nav-processos" onclick="showProcessos()"><div class="dot"></div>Processos</div>
+    <div class="foot" onclick="sair()">Sair</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">Alunos</h1>
+        <p id="page-sub">Acompanhamento pedagógico e CS por status</p>
+      </div>
+      <div class="topbar-actions" id="alunos-actions">
+        <input class="search" id="search-input" placeholder="Buscar aluno, produto ou nicho..." oninput="renderBoard()">
+        <button class="btn-action secondary" onclick="exportarCSV()">⬇ Exportar CSV</button>
+        <button class="btn-action" onclick="novoAluno()">+ Novo aluno</button>
+      </div>
+    </div>
+
+    <div class="filters" id="filters">
+      <select class="filter-select" id="filtro-produto" onchange="renderBoard()">
+        <option value="">Produto: todos</option>
+        <option value="FEND">FEND</option>
+        <option value="Catarse">Catarse</option>
+        <option value="Ignis">Ignis</option>
+      </select>
+      <select class="filter-select" id="filtro-mes" onchange="renderBoard()">
+        <option value="">Mês de encerramento: todos</option>
+      </select>
+      <select class="filter-select" id="filtro-status" onchange="renderBoard()">
+        <option value="">Status: todos</option>
+        <option value="novo-cadastro">Novo cadastro</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+        <option value="churn">Churn</option>
+        <option value="nao-renovado">Não renovado</option>
+        <option value="outros">Outros status</option>
+      </select>
+    </div>
+
+    <div class="board" id="board">
+      <div class="loading">Carregando alunos...</div>
+    </div>
+
+    <div class="processos" id="processos">
+      <button class="add-btn" onclick="novoProcesso()">+ Novo processo</button>
+      <div id="processos-list"><div class="loading">Carregando processos...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeFichaOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="modal-nome">—</h2>
+        <div class="tagline" id="modal-tagline">—</div>
+      </div>
+      <div class="modal-actions">
+        <button class="edit-btn" id="btn-editar" onclick="toggleEdit()">✏ Editar</button>
+        <button class="save-btn" id="btn-salvar" onclick="salvarFicha()">Salvar</button>
+        <button class="close-btn" onclick="closeFicha()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modal-body"><!-- preenchido via JS --></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import {
+    getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
+    onSnapshot, getDocs, serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDaYBg9lnOD6EAgdh8Xx58d_svfx2EBLXU",
+    authDomain: "fend-crm-saga.firebaseapp.com",
+    projectId: "fend-crm-saga",
+    storageBucket: "fend-crm-saga.firebasestorage.app",
+    messagingSenderId: "130919382187",
+    appId: "1:130919382187:web:e7aae8b70c87c9b98e4bee"
+  };
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db = getFirestore(app);
+
+  // ===== LOGIN =====
+  const SENHA_PAINEL = 'saga2026'; // troque aqui quando quiser mudar a senha
+
+  window.tentarLogin = function(){
+    const val = document.getElementById('login-password').value;
+    if(val === SENHA_PAINEL){
+      sessionStorage.setItem('saga-ped-auth', 'true');
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      iniciarApp();
+    } else {
+      document.getElementById('login-error').classList.add('show');
+    }
+  };
+  window.sair = function(){
+    sessionStorage.removeItem('saga-ped-auth');
+    location.reload();
+  };
+  if(sessionStorage.getItem('saga-ped-auth') === 'true'){
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('show');
+    iniciarApp();
+  }
+
+  // ===== ESTADO =====
+  let alunosCache = [];
+  let processosCache = [];
+  let fichaAtualId = null;
+
+  function iniciarApp(){
+    onSnapshot(collection(db, 'alunos'), snap => {
+      alunosCache = [];
+      snap.forEach(d => alunosCache.push({ id: d.id, ...d.data() }));
+      atualizarFiltroMes();
+      renderBoard();
+      if(fichaAtualId) abrirFichaPorId(fichaAtualId, false);
+    });
+
+    onSnapshot(collection(db, 'processos'), async snap => {
+      if(snap.empty){
+        await seedProcessos();
+        return;
+      }
+      processosCache = [];
+      snap.forEach(d => processosCache.push({ id: d.id, ...d.data() }));
+      processosCache.sort((a,b) => (a.ordem||0) - (b.ordem||0));
+      renderProcessos();
+    });
+  }
+
+  async function seedProcessos(){
+    const lista = [
+      { titulo:'Onboarding', pessoas:['aluno','cs'], passos:[
+        'Confirmar matrícula e liberar acesso à área do aluno',
+        'Enviar mensagem de boas-vindas com link do grupo',
+        'Agendar sessão de alinhamento com a mentora',
+        'Registrar aluno no board com status "Ativo"',
+        'Marcar follow-up de 7 dias para primeiro check-in'
+      ], links:[] },
+      { titulo:'Aluno novo', pessoas:['aluno','cs'], passos:[], links:[] },
+      { titulo:'Contrato', pessoas:['aluno','comercial'], passos:[], links:[] },
+      { titulo:'Agendamento de sessão', pessoas:['aluno','mentora'], passos:[], links:[] },
+      { titulo:'Sessão individual FEND', pessoas:['aluno','mentora'], passos:[], links:[] },
+      { titulo:'Sessão individual Catarse', pessoas:['aluno','mentora'], passos:[], links:[] },
+      { titulo:'Hotseat', pessoas:['aluno','mentora'], passos:[], links:[] },
+      { titulo:'Aula com convidado', pessoas:['aluno','convidado'], passos:[], links:[] },
+      { titulo:'Dúvida no grupo', pessoas:['aluno','cs'], passos:[], links:[] },
+      { titulo:'Modelo de avisos', pessoas:['cs'], passos:[], links:[] },
+      { titulo:'Mensagens prontas', pessoas:['cs'], passos:[], links:[] },
+      { titulo:'Controle de sessões das mentoras', pessoas:['mentora','cs'], passos:[], links:[] },
+      { titulo:'Pedido de cancelamento', pessoas:['aluno','cs','comercial'], passos:[], links:[] },
+      { titulo:'Encerramento de ciclo', pessoas:['aluno','cs'], passos:[
+        'Coletar feedback do aluno sobre a saída',
+        'Registrar motivo de não renovação, se aplicável',
+        'Atualizar status final no board'
+      ], links:[] },
+      { titulo:'Editar mapas mentais', pessoas:['cs'], passos:[], links:[] },
+      { titulo:'CAVs', pessoas:['cs'], passos:[], links:[] },
+      { titulo:'Projeto final', pessoas:['aluno','mentora'], passos:[], links:[] }
+    ];
+    for(let i=0;i<lista.length;i++){
+      await addDoc(collection(db, 'processos'), { ...lista[i], ordem:i, atualizadoEm: new Date().toLocaleDateString('pt-BR') });
+    }
+  }
+
+  // ===== NAVEGAÇÃO =====
+  window.showAlunos = function(){
+    document.getElementById('board').classList.remove('hide');
+    document.getElementById('filters').classList.remove('hide');
+    document.getElementById('alunos-actions').style.display = 'flex';
+    document.getElementById('processos').classList.remove('show');
+    document.getElementById('page-title').innerText = 'Alunos';
+    document.getElementById('page-sub').innerText = 'Acompanhamento pedagógico e CS por status';
+    document.getElementById('nav-alunos').classList.add('active');
+    document.getElementById('nav-processos').classList.remove('active');
+  };
+  window.showProcessos = function(){
+    document.getElementById('board').classList.add('hide');
+    document.getElementById('filters').classList.add('hide');
+    document.getElementById('alunos-actions').style.display = 'none';
+    document.getElementById('processos').classList.add('show');
+    document.getElementById('page-title').innerText = 'Processos';
+    document.getElementById('page-sub').innerText = 'Procedimentos do setor pedagógico e CS';
+    document.getElementById('nav-alunos').classList.remove('active');
+    document.getElementById('nav-processos').classList.add('active');
+  };
+
+  // ===== BOARD DE ALUNOS =====
+  const COLUNAS = [
+    { key:'novo-cadastro', label:'Novo cadastro' },
+    { key:'ativo', label:'Ativo' },
+    { key:'inativo', label:'Inativo' },
+    { key:'churn', label:'Churn' },
+    { key:'nao-renovado', label:'Não renovado' },
+    { key:'outros', label:'Outros status' }
+  ];
+
+  function atualizarFiltroMes(){
+    const select = document.getElementById('filtro-mes');
+    const atual = select.value;
+    const meses = new Set();
+    alunosCache.forEach(a => { if(a.dataFinalCiclo) meses.add(a.dataFinalCiclo.slice(0,7)); });
+    select.innerHTML = '<option value="">Mês de encerramento: todos</option>' +
+      [...meses].sort().map(m => `<option value="${m}">${m}</option>`).join('');
+    select.value = atual;
+  }
+
+  window.renderBoard = function(){
+    const board = document.getElementById('board');
+    const busca = document.getElementById('search-input').value.toLowerCase();
+    const fProduto = document.getElementById('filtro-produto').value;
+    const fMes = document.getElementById('filtro-mes').value;
+    const fStatus = document.getElementById('filtro-status').value;
+
+    let filtrados = alunosCache.filter(a => {
+      if(fProduto && a.produto !== fProduto) return false;
+      if(fStatus && a.status !== fStatus) return false;
+      if(fMes && !(a.dataFinalCiclo || '').startsWith(fMes)) return false;
+      if(busca){
+        const alvo = ((a.nomeCompleto||'') + ' ' + (a.produto||'') + ' ' + (a.nicho||'')).toLowerCase();
+        if(!alvo.includes(busca)) return false;
+      }
+      return true;
+    });
+
+    board.innerHTML = '';
+    COLUNAS.forEach(col => {
+      const divCol = document.createElement('div');
+      divCol.className = 'column';
+      divCol.ondragover = e => e.preventDefault();
+      divCol.ondrop = e => onDrop(e, col.key);
+
+      const itens = filtrados.filter(a => (a.status || 'ativo') === col.key);
+      divCol.innerHTML = `<div class="column-head">${col.label} <span class="count">${itens.length}</span></div>`;
+
+      if(itens.length === 0){
+        divCol.innerHTML += '<div class="empty-col">Nenhum aluno aqui</div>';
+      }
+
+      itens.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = true;
+        card.dataset.id = a.id;
+        card.ondragstart = e => { e.dataTransfer.setData('text/plain', a.id); };
+        card.onclick = () => abrirFichaPorId(a.id);
+        const produtoClasse = (a.produto||'').toLowerCase() || 'default';
+        card.innerHTML = `
+          <div class="name">${escapeHtml(a.nomeCompleto || 'Sem nome')}</div>
+          <span class="produto-tag ${produtoClasse}">${escapeHtml(a.produto || '—')}</span>
+          <div class="row">Nicho: ${escapeHtml(a.nicho || '—')}</div>
+          <div class="row">Entrada: ${escapeHtml(a.dataEntrada || '—')}</div>
+        `;
+        addTouchDrag(card, a.id);
+        divCol.appendChild(card);
+      });
+
+      board.appendChild(divCol);
+    });
+  };
+
+  async function onDrop(ev, novoStatus){
+    ev.preventDefault();
+    const id = ev.dataTransfer.getData('text/plain');
+    if(!id) return;
+    await updateDoc(doc(db, 'alunos', id), { status: novoStatus });
+  }
+
+  // Touch drag and drop (celular)
+  function addTouchDrag(card, id){
+    let startX, startY, clone, dragging = false;
+    card.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      startX = t.clientX; startY = t.clientY; dragging = false;
+    }, {passive:true});
+    card.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      if(!dragging && (Math.abs(dx) > 8 || Math.abs(dy) > 8)){
+        dragging = true;
+        const rect = card.getBoundingClientRect();
+        clone = card.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.width = rect.width + 'px';
+        clone.style.left = rect.left + 'px';
+        clone.style.top = rect.top + 'px';
+        clone.style.zIndex = '999';
+        clone.style.opacity = '0.9';
+        clone.style.pointerEvents = 'none';
+        clone.style.transform = 'rotate(2deg)';
+        document.body.appendChild(clone);
+        card.style.opacity = '0.3';
+      }
+      if(dragging){
+        e.preventDefault();
+        clone.style.left = (t.clientX - startX + card.getBoundingClientRect().left) + 'px';
+        clone.style.top = (t.clientY) + 'px';
+      }
+    }, {passive:false});
+    card.addEventListener('touchend', async e => {
+      if(dragging){
+        const t = e.changedTouches[0];
+        const el = document.elementFromPoint(t.clientX, t.clientY);
+        const col = el ? el.closest('.column') : null;
+        if(clone) clone.remove();
+        card.style.opacity = '1';
+        if(col){
+          const idx = Array.from(board.children).indexOf(col);
+          const novoStatus = COLUNAS[idx] ? COLUNAS[idx].key : null;
+          if(novoStatus) await updateDoc(doc(db, 'alunos', id), { status: novoStatus });
+        }
+      }
+      dragging = false;
+    });
+  }
+
+  // ===== FICHA DO ALUNO =====
+  window.novoAluno = async function(){
+    const ref = await addDoc(collection(db, 'alunos'), {
+      nomeCompleto: 'Novo aluno', produto: '', nicho: '', dataEntrada: new Date().toLocaleDateString('pt-BR'),
+      status: 'ativo', interacoes: [], criadoEm: serverTimestamp()
+    });
+    abrirFichaPorId(ref.id);
+  };
+
+  window.abrirFichaPorId = function(id, forceOpen = true){
+    const a = alunosCache.find(x => x.id === id);
+    if(!a) return;
+    fichaAtualId = id;
+    document.getElementById('modal-nome').innerText = a.nomeCompleto || 'Sem nome';
+    document.getElementById('modal-tagline').innerText = `${a.produto || '—'} · Nicho: ${a.nicho || '—'}`;
+    document.getElementById('modal-body').innerHTML = renderFichaBody(a);
+    document.getElementById('modal').classList.remove('editing');
+    document.getElementById('btn-editar').style.display = 'inline-block';
+    document.getElementById('btn-salvar').style.display = 'none';
+    if(forceOpen) document.getElementById('overlay').classList.add('show');
+  };
+
+  function renderFichaBody(a){
+    const end = a.endereco || {};
+    const interacoes = (a.interacoes || []).slice().reverse().map(i =>
+      `<div class="interaction"><div class="date">${escapeHtml(i.data||'')}</div>${escapeHtml(i.resumo||'')}</div>`
+    ).join('') || '<div class="empty-col">Sem interações registradas.</div>';
+
+    return `
+      <div class="section">
+        <h3>Identificação</h3>
+        <div class="field-grid">
+          <div class="field"><label>Nome completo</label><div class="val">${escapeHtml(a.nomeCompleto||'—')}</div><input id="ed-nomeCompleto" value="${attr(a.nomeCompleto)}"></div>
+          <div class="field"><label>Contato</label><div class="val">${escapeHtml(a.contato||'—')}</div><input id="ed-contato" value="${attr(a.contato)}"></div>
+          <div class="field"><label>Produto</label><div class="val">${escapeHtml(a.produto||'—')}</div>
+            <select id="ed-produto">
+              <option value="" ${!a.produto?'selected':''}>—</option>
+              <option value="FEND" ${a.produto==='FEND'?'selected':''}>FEND</option>
+              <option value="Catarse" ${a.produto==='Catarse'?'selected':''}>Catarse</option>
+              <option value="Ignis" ${a.produto==='Ignis'?'selected':''}>Ignis</option>
+            </select>
+          </div>
+          <div class="field"><label>Nicho</label><div class="val">${escapeHtml(a.nicho||'—')}</div><input id="ed-nicho" value="${attr(a.nicho)}"></div>
+          <div class="field"><label>Data de entrada</label><div class="val">${escapeHtml(a.dataEntrada||'—')}</div><input id="ed-dataEntrada" value="${attr(a.dataEntrada)}"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Situação</h3>
+        <div class="field-grid">
+          <div class="field"><label>Status</label><div class="val">${labelStatus(a.status)}</div>
+            <select id="ed-status">
+              ${COLUNAS.map(c => `<option value="${c.key}" ${a.status===c.key?'selected':''}>${c.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>Última sessão</label><div class="val">${escapeHtml(a.ultimaSessaoData||'—')} ${a.ultimaSessaoMentora ? '— '+escapeHtml(a.ultimaSessaoMentora) : ''}</div>
+            <input id="ed-ultimaSessaoData" placeholder="Data" value="${attr(a.ultimaSessaoData)}" style="margin-bottom:4px;">
+            <input id="ed-ultimaSessaoMentora" placeholder="Nome da mentora" value="${attr(a.ultimaSessaoMentora)}">
+          </div>
+          <div class="field full-width"><label>Data final do ciclo</label><div class="val">${escapeHtml(a.dataFinalCiclo||'—')}</div><input id="ed-dataFinalCiclo" type="date" value="${attr(a.dataFinalCiclo)}"></div>
+          <div class="field full-width"><label>Motivo do risco</label><div class="val">${escapeHtml(a.motivoRisco||'—')}</div><input id="ed-motivoRisco" value="${attr(a.motivoRisco)}" style="margin-bottom:4px;">
+            <div class="val" style="font-weight:400; color:var(--text-soft);">${escapeHtml(a.motivoRiscoObs||'')}</div>
+            <textarea id="ed-motivoRiscoObs" rows="2" placeholder="Observação">${a.motivoRiscoObs||''}</textarea>
+          </div>
+          <div class="field"><label>Próximo follow-up</label><div class="val">${escapeHtml(a.proximoFollowUp||'—')}</div><input id="ed-proximoFollowUp" type="date" value="${attr(a.proximoFollowUp)}"></div>
+          ${a.statusOriginal ? `<div class="field"><label>Status original (importação)</label><div class="val">${escapeHtml(a.statusOriginal)}</div></div>` : ''}
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Financeiro</h3>
+        <div class="field-grid">
+          <div class="field"><label>Situação de pagamento</label><div class="val">${escapeHtml(a.situacaoPagamento||'—')}</div><input id="ed-situacaoPagamento" value="${attr(a.situacaoPagamento)}"></div>
+          <div class="field"><label>Contrato (link)</label><div class="val">${a.contratoLink ? `<a href="${attr(a.contratoLink)}" target="_blank" style="color:var(--teal)">Ver contrato →</a>` : '—'}</div><input id="ed-contratoLink" value="${attr(a.contratoLink)}"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Acompanhamento</h3>
+        ${interacoes}
+        <div class="new-interaction">
+          <input type="text" id="nova-interacao-data" placeholder="Data" style="max-width:110px;">
+          <input type="text" id="nova-interacao-resumo" placeholder="Resumo da interação">
+          <button onclick="adicionarInteracao()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Encerramento</h3>
+        <div class="val">${escapeHtml(a.feedbackSaida || 'Sem registro de encerramento.')}</div>
+        <textarea id="ed-feedbackSaida" rows="2" placeholder="Feedback do aluno sobre a saída">${a.feedbackSaida||''}</textarea>
+      </div>
+
+      <div class="section">
+        <h3>Informações pessoais</h3>
+        <div class="field-grid">
+          <div class="field"><label>Telefone</label><div class="val">${escapeHtml(a.contato||'—')}</div><input id="ed-telefonePessoal" value="${attr(a.contato)}"></div>
+          <div class="field"><label>Contato de emergência</label><div class="val">${escapeHtml(a.contatoEmergencia||'—')}</div><input id="ed-contatoEmergencia" value="${attr(a.contatoEmergencia)}"></div>
+          <div class="field"><label>CPF</label><div class="val">${escapeHtml(a.cpf||'—')}</div><input id="ed-cpf" value="${attr(a.cpf)}"></div>
+          <div class="field"><label>RG</label><div class="val">${escapeHtml(a.rg||'—')}</div><input id="ed-rg" value="${attr(a.rg)}"></div>
+          <div class="field"><label>Data de nascimento</label><div class="val">${escapeHtml(a.dataNascimento||'—')}</div><input id="ed-dataNascimento" type="date" value="${attr(a.dataNascimento)}"></div>
+          <div class="field"><label>Nacionalidade</label><div class="val">${escapeHtml(a.nacionalidade||'—')}</div><input id="ed-nacionalidade" value="${attr(a.nacionalidade)}"></div>
+          <div class="field"><label>Estado civil</label><div class="val">${escapeHtml(a.estadoCivil||'—')}</div><input id="ed-estadoCivil" value="${attr(a.estadoCivil)}"></div>
+          <div class="field"><label>Profissão</label><div class="val">${escapeHtml(a.profissao||'—')}</div><input id="ed-profissao" value="${attr(a.profissao)}"></div>
+          <div class="field"><label>Faturamento mensal</label><div class="val">${escapeHtml(a.faturamentoMensal||'—')}</div><input id="ed-faturamentoMensal" value="${attr(a.faturamentoMensal)}"></div>
+          <div class="field"><label>Faturamento anual</label><div class="val">${escapeHtml(a.faturamentoAnual||'—')}</div><input id="ed-faturamentoAnual" value="${attr(a.faturamentoAnual)}"></div>
+          <div class="field full-width"><label>Endereço</label><div class="val">${escapeHtml([end.rua,end.numero,end.bairro,end.cidade,end.estado,end.cep].filter(Boolean).join(', ')||'—')}</div><input id="ed-endereco" value="${attr([end.rua,end.numero,end.bairro,end.cidade,end.estado,end.cep].filter(Boolean).join(', '))}"></div>
+          <div class="field"><label>Instagram</label><div class="val">${escapeHtml(a.instagram||'—')}</div><input id="ed-instagram" value="${attr(a.instagram)}"></div>
+          <div class="field"><label>E-mail</label><div class="val">${escapeHtml(a.email||'—')}</div><input id="ed-email" value="${attr(a.email)}"></div>
+          ${a.documentoUrl ? `<div class="field full-width"><label>Documento anexado</label><a href="${attr(a.documentoUrl)}" target="_blank" style="color:var(--teal); font-size:12.5px;">Ver documento →</a></div>` : ''}
+        </div>
+      </div>
+
+      <div class="section">
+        <span class="delete-aluno" onclick="excluirAluno()">Excluir este aluno</span>
+      </div>
+    `;
+  }
+
+  function labelStatus(s){
+    const c = COLUNAS.find(c => c.key === s);
+    return c ? c.label : '—';
+  }
+  function escapeHtml(s){
+    if(s === undefined || s === null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function attr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+  window.toggleEdit = function(){
+    const modal = document.getElementById('modal');
+    modal.classList.add('editing');
+    document.getElementById('btn-editar').style.display = 'none';
+    document.getElementById('btn-salvar').style.display = 'inline-block';
+  };
+
+  window.salvarFicha = async function(){
+    if(!fichaAtualId) return;
+    const g = id => document.getElementById(id) ? document.getElementById(id).value : undefined;
+    const enderecoStr = g('ed-endereco') || '';
+    const partes = enderecoStr.split(',').map(s => s.trim());
+
+    const dadosAtualizados = {
+      nomeCompleto: g('ed-nomeCompleto'),
+      contato: g('ed-contato'),
+      produto: g('ed-produto'),
+      nicho: g('ed-nicho'),
+      dataEntrada: g('ed-dataEntrada'),
+      status: g('ed-status'),
+      ultimaSessaoData: g('ed-ultimaSessaoData'),
+      ultimaSessaoMentora: g('ed-ultimaSessaoMentora'),
+      dataFinalCiclo: g('ed-dataFinalCiclo'),
+      motivoRisco: g('ed-motivoRisco'),
+      motivoRiscoObs: g('ed-motivoRiscoObs'),
+      proximoFollowUp: g('ed-proximoFollowUp'),
+      situacaoPagamento: g('ed-situacaoPagamento'),
+      contratoLink: g('ed-contratoLink'),
+      feedbackSaida: g('ed-feedbackSaida'),
+      contatoEmergencia: g('ed-contatoEmergencia'),
+      cpf: g('ed-cpf'),
+      rg: g('ed-rg'),
+      dataNascimento: g('ed-dataNascimento'),
+      nacionalidade: g('ed-nacionalidade'),
+      estadoCivil: g('ed-estadoCivil'),
+      profissao: g('ed-profissao'),
+      faturamentoMensal: g('ed-faturamentoMensal'),
+      faturamentoAnual: g('ed-faturamentoAnual'),
+      instagram: g('ed-instagram'),
+      email: g('ed-email'),
+      endereco: {
+        rua: partes[0]||'', numero: partes[1]||'', bairro: partes[2]||'',
+        cidade: partes[3]||'', estado: partes[4]||'', cep: partes[5]||''
+      }
+    };
+    Object.keys(dadosAtualizados).forEach(k => dadosAtualizados[k] === undefined && delete dadosAtualizados[k]);
+
+    await updateDoc(doc(db, 'alunos', fichaAtualId), dadosAtualizados);
+    document.getElementById('modal').classList.remove('editing');
+    document.getElementById('btn-editar').style.display = 'inline-block';
+    document.getElementById('btn-salvar').style.display = 'none';
+  };
+
+  window.adicionarInteracao = async function(){
+    const data = document.getElementById('nova-interacao-data').value.trim();
+    const resumo = document.getElementById('nova-interacao-resumo').value.trim();
+    if(!resumo) return;
+    const a = alunosCache.find(x => x.id === fichaAtualId);
+    const interacoes = (a.interacoes || []).concat([{ data, resumo }]);
+    await updateDoc(doc(db, 'alunos', fichaAtualId), { interacoes });
+  };
+
+  window.excluirAluno = async function(){
+    if(!confirm('Tem certeza que quer excluir este aluno? Essa ação não pode ser desfeita.')) return;
+    await deleteDoc(doc(db, 'alunos', fichaAtualId));
+    closeFicha();
+  };
+
+  window.closeFicha = function(){
+    document.getElementById('overlay').classList.remove('show');
+    fichaAtualId = null;
+  };
+  window.closeFichaOutside = function(e){ if(e.target.id === 'overlay') closeFicha(); };
+
+  // ===== EXPORTAR CSV =====
+  window.exportarCSV = function(){
+    const campos = [
+      'nomeCompleto','contato','produto','nicho','dataEntrada','status',
+      'ultimaSessaoData','ultimaSessaoMentora','dataFinalCiclo','motivoRisco','motivoRiscoObs',
+      'proximoFollowUp','situacaoPagamento','contratoLink','feedbackSaida',
+      'contatoEmergencia','cpf','rg','dataNascimento','nacionalidade','estadoCivil','profissao',
+      'faturamentoMensal','faturamentoAnual','instagram','email'
+    ];
+    const linhas = [campos.join(',')];
+    alunosCache.forEach(a => {
+      const linha = campos.map(c => {
+        let v = a[c] === undefined || a[c] === null ? '' : String(a[c]);
+        v = v.replace(/"/g, '""');
+        return `"${v}"`;
+      });
+      linhas.push(linha.join(','));
+    });
+    const csv = '\uFEFF' + linhas.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alunos_pedagogico_saga_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ===== PROCESSOS =====
+  window.renderProcessos = function(){
+    const list = document.getElementById('processos-list');
+    list.innerHTML = processosCache.map(p => {
+      const passosHtml = (p.passos||[]).map(s => escapeHtml(s)).map(s => `<li>${s}</li>`).join('') || '<div class="empty-col">Sem passos definidos ainda.</div>';
+      const tagsHtml = (p.pessoas||[]).map(t => `<span class="ptag ${t}">${labelPessoa(t)}</span>`).join('');
+      const linksHtml = (p.links||[]).map(l => `<a class="link-item" href="${attr(l.url)}" target="_blank">${escapeHtml(l.label||l.url)}</a>`).join('') || '';
+      return `
+        <div class="proc-category" id="proc-${p.id}">
+          <div class="proc-head" onclick="toggleProc('${p.id}')">
+            <div>
+              <div class="title">${escapeHtml(p.titulo)}</div>
+              <div class="sub">${(p.passos||[]).length} passo(s)</div>
+              <div class="people-tags">${tagsHtml}</div>
+            </div>
+            <div class="updated">${escapeHtml(p.atualizadoEm||'')}</div>
+          </div>
+          <div class="proc-body">
+            <ol>${passosHtml}</ol>
+            <div>${linksHtml}</div>
+            <button class="proc-edit-btn" onclick="event.stopPropagation(); editarProcesso('${p.id}')">✏ Editar este processo</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  function labelPessoa(t){
+    return { aluno:'Aluno', mentora:'Mentora', cs:'CS', comercial:'Comercial', convidado:'Convidado' }[t] || t;
+  }
+
+  window.toggleProc = function(id){
+    document.getElementById('proc-'+id).classList.toggle('open');
+  };
+
+  window.editarProcesso = function(id){
+    const p = processosCache.find(x => x.id === id);
+    const body = document.querySelector('#proc-'+id+' .proc-body');
+    const todasPessoas = ['aluno','mentora','cs','comercial','convidado'];
+    body.innerHTML = `
+      <label style="font-size:11px; color:var(--text-soft);">Título</label>
+      <input type="text" id="edit-titulo-${id}" value="${attr(p.titulo)}">
+      <label style="font-size:11px; color:var(--text-soft);">Pessoas envolvidas</label>
+      <div class="people-tags" style="margin-bottom:10px;">
+        ${todasPessoas.map(t => `<label style="font-size:11px; margin-right:8px;"><input type="checkbox" id="chk-${id}-${t}" ${(p.pessoas||[]).includes(t)?'checked':''}> ${labelPessoa(t)}</label>`).join('')}
+      </div>
+      <label style="font-size:11px; color:var(--text-soft);">Passos</label>
+      <div id="steps-${id}">
+        ${(p.passos||[]).map((s,i) => `<div class="step-row"><input type="text" value="${attr(s)}" data-step="${i}"><span class="remove-x" onclick="this.parentElement.remove()">✕</span></div>`).join('')}
+      </div>
+      <button class="proc-edit-btn" onclick="event.stopPropagation(); addStepRow('${id}')">+ Adicionar passo</button>
+      <label style="font-size:11px; color:var(--text-soft); margin-top:10px; display:block;">Links úteis (rótulo | URL)</label>
+      <div id="links-${id}">
+        ${(p.links||[]).map((l,i) => `<div class="step-row"><input type="text" placeholder="Rótulo" value="${attr(l.label)}" data-link-label="${i}"><input type="text" placeholder="URL" value="${attr(l.url)}" data-link-url="${i}"><span class="remove-x" onclick="this.parentElement.remove()">✕</span></div>`).join('')}
+      </div>
+      <button class="proc-edit-btn" onclick="event.stopPropagation(); addLinkRow('${id}')">+ Adicionar link</button>
+      <div style="margin-top:14px; display:flex; gap:8px;">
+        <button class="btn-action" onclick="event.stopPropagation(); salvarProcesso('${id}')">Salvar</button>
+        <button class="btn-action secondary" onclick="event.stopPropagation(); renderProcessos()">Cancelar</button>
+      </div>
+    `;
+  };
+
+  window.addStepRow = function(id){
+    const div = document.getElementById('steps-'+id);
+    const row = document.createElement('div');
+    row.className = 'step-row';
+    row.innerHTML = `<input type="text" value=""><span class="remove-x" onclick="this.parentElement.remove()">✕</span>`;
+    div.appendChild(row);
+  };
+  window.addLinkRow = function(id){
+    const div = document.getElementById('links-'+id);
+    const row = document.createElement('div');
+    row.className = 'step-row';
+    row.innerHTML = `<input type="text" placeholder="Rótulo" value=""><input type="text" placeholder="URL" value=""><span class="remove-x" onclick="this.parentElement.remove()">✕</span>`;
+    div.appendChild(row);
+  };
+
+  window.salvarProcesso = async function(id){
+    const titulo = document.getElementById('edit-titulo-'+id).value.trim();
+    const todasPessoas = ['aluno','mentora','cs','comercial','convidado'];
+    const pessoas = todasPessoas.filter(t => document.getElementById(`chk-${id}-${t}`).checked);
+    const passos = Array.from(document.querySelectorAll(`#steps-${id} input`)).map(i => i.value.trim()).filter(Boolean);
+    const linkRows = document.querySelectorAll(`#links-${id} .step-row`);
+    const links = Array.from(linkRows).map(row => {
+      const inputs = row.querySelectorAll('input');
+      return { label: inputs[0].value.trim(), url: inputs[1].value.trim() };
+    }).filter(l => l.url);
+
+    await updateDoc(doc(db, 'processos', id), {
+      titulo, pessoas, passos, links,
+      atualizadoEm: new Date().toLocaleDateString('pt-BR')
+    });
+  };
+
+  window.novoProcesso = async function(){
+    const ref = await addDoc(collection(db, 'processos'), {
+      titulo: 'Novo processo', pessoas: [], passos: [], links: [],
+      ordem: processosCache.length, atualizadoEm: new Date().toLocaleDateString('pt-BR')
+    });
+    setTimeout(() => { window.editarProcesso(ref.id); }, 300);
+  };
+</script>
+</body>
+</html>
